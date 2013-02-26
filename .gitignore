@@ -36,3 +36,6 @@ nosetests.xml
 
 # eclipse
 .settings/
+
+# tests folder ignore
+tests/
