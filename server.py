@@ -18,12 +18,11 @@ __program__ = "auto-fs-bench"
 __version__ = "0.1 (dev)"
 __description__ = "Executable serveur pour auto-fs-bench."
 
-# chargement des clients
-clients = conf.load("clients.json")
-
 
 class Server:
     """Classe contenant les configurations serveur"""
+    
+    clients = conf.load("clients.json")
     
     sport = 7979
     lport = 6969
@@ -81,10 +80,11 @@ class ServerCmd(cmd.Cmd):
         """Listage des clients, envoie d'un heartbeat a partir de la liste"""
         
         if line == "clients":
-            print "Liste des clients"
+            print " Hote\t\t| Etat"
+            print "----------------+-------------"
             
-            for k, v in clients.items():
-                print "%s: %r" % (k, commands.server.heartbeat(v, Server.sport))
+            for k, v in Server.clients.items():
+                print " %s\t| %r" % (k, commands.server.heartbeat(v, Server.sport))
     
     def help_list(self):
         print "\n".join(["- list clients", "Affiche la liste des clients avec etat"])
