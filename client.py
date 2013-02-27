@@ -16,6 +16,9 @@ __program__ = "auto-fs-bench"
 __version__ = "0.1 (dev)"
 __description__ = "Executable client pour auto-fs-bench."
 
+# config srv
+__sport__ = 6969
+__lport__ = 7979
 
 class ClientArgumentParser(argparse.ArgumentParser):
     """Argument Parser pour le serveur"""
@@ -29,14 +32,14 @@ class ClientArgumentParser(argparse.ArgumentParser):
         # ajout des paramètres de lancement
         self.add_argument('server_addr', 
                           help="adresse du serveur de benchmark")
-        self.add_argument('--sport', default=6969, type=int, 
-                          help="port d'envoi du client (default: 6969)")
-        self.add_argument('--lport', default=7979, type=int, 
-                          help="port d'ecoute du client (default: 7979)")
         self.add_argument("-d", "--daemon", action="store_true", dest="daemon", 
                           help="lancement en demon")
         self.add_argument("-v", "--verbose", action="count", dest="verbose", 
                           help="parametrage de la verbosite")
+        self.add_argument('--sport', default=6969, type=int, 
+                          help="port d'envoi du client (default: 6969)")
+        self.add_argument('--lport', default=7979, type=int, 
+                          help="port d'ecoute du client (default: 7979)")
 
 
 class ClientHandler(SocketServer.StreamRequestHandler):
@@ -70,10 +73,14 @@ class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
 def main(argv=None):
     args = ClientArgumentParser().parse_args()
     
-    print __description__
-    print "[+] Lancement du client en ecoute sur %s:%i" % (args.server_addr, args.lport)
+    # config srv
+    __sport__ = args.sport
+    __lport__ = args.lport
     
-    client = ThreadedTCPServer(("127.0.0.1", args.lport), ClientHandler)
+    print __description__
+    print "[+] Lancement du client en connexion sur serveur %s:%i" % (args.server_addr, __lport__)
+    
+    client = ThreadedTCPServer(("127.0.0.1", __lport__), ClientHandler)
     
     if args.daemon:
         client_thread = threading.Thread(target=client.serve_forever)

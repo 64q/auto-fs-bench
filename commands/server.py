@@ -8,7 +8,7 @@ Created on 27 févr. 2013
 
 import socket, json
 
-def heartbeat(addr):
+def heartbeat(host, port):
     """Fonction permettant d'envoyer des msgs de type heartbeat"""
     
     state = False
@@ -22,7 +22,7 @@ def heartbeat(addr):
     
     try:
         # Connect to server and send data
-        sock.connect((addr, 7979))
+        sock.connect((host, port))
         sock.sendall(data + "\n")
     
         # Receive data from the server and shut down
