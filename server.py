@@ -21,7 +21,7 @@ __version__ = "0.1 (dev)"
 __description__ = "Executable serveur pour auto-fs-bench."
 
 # chargement des clients
-clients = json.load(open("tests/clients.json", "r"))
+clients = json.load(open("clients.json", "r"))
 
 
 class ServerArgumentParser(argparse.ArgumentParser):
