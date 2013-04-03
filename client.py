@@ -12,6 +12,8 @@ import threading
 
 import SocketServer
 
+import commands.client
+
 __program__ = "auto-fs-bench"
 __version__ = "0.1 (dev)"
 __description__ = "Executable client pour auto-fs-bench."
@@ -36,8 +38,6 @@ class ClientArgumentParser(argparse.ArgumentParser):
                           help="lancement en demon")
         self.add_argument("-v", "--verbose", action="count", dest="verbose", 
                           help="parametrage de la verbosite")
-        self.add_argument('--sport', default=6969, type=int, 
-                          help="port d'envoi du client (default: 6969)")
         self.add_argument('--lport', default=7979, type=int, 
                           help="port d'ecoute du client (default: 7979)")
 
@@ -56,13 +56,16 @@ class ClientHandler(SocketServer.StreamRequestHandler):
         # traitement des commandes recues
         # heartbeat
         if request["command"] == "heartbeat":
-            response = json.dumps({"command": "heartbeat", "result": "ok"})
+            response = commands.client.heartbeat()
+        # run
+        elif request["command"] == "run":
+            response = commands.client.run(request["params"])
+        # commande inconnue
         else:
-            response = json.dumps({"command": "error", "result": "ko"})
+            response = commands.client.error()
         
         print "sent back: %s" % response
         
-        # just send back the same data, but upper-cased
         self.request.sendall(response)
 
 
@@ -74,7 +77,6 @@ def main(argv=None):
     args = ClientArgumentParser().parse_args()
     
     # config srv
-    __sport__ = args.sport
     __lport__ = args.lport
     
     print __description__

@@ -8,7 +8,6 @@ Created on 26 févr. 2013
 
 import sys
 import argparse, cmd
-import threading, SocketServer
 
 import conf
 import commands.server
@@ -22,10 +21,9 @@ __description__ = "Executable serveur pour auto-fs-bench."
 class Server:
     """Classe contenant les configurations serveur"""
     
-    clients = conf.load("clients.json")
+    clients = conf.load_config_app("clients")
     
     sport = 7979
-    lport = 6969
 
 
 class ServerArgumentParser(argparse.ArgumentParser):
@@ -44,8 +42,6 @@ class ServerArgumentParser(argparse.ArgumentParser):
                           help="lance la ligne de commande en mode interactif, ignore l'argument bench_file")
         self.add_argument("-v", "--verbose", action="count", dest="verbose", 
                           help="parametrage de la verbosite")
-        self.add_argument('--lport', default=6969, type=int, 
-                          help="port d'ecoute du serveur (default: 6969)")
         self.add_argument('--sport', default=7979, type=int, 
                           help="port d'envoi du serveur (default: 7979)")
 
@@ -68,23 +64,45 @@ class ServerCmd(cmd.Cmd):
     
     def do_load(self, line):
         if line:
-            confs = conf.load(line)
-            # affichage après chargement
-            print "conf '%s' loaded successfully" % confs["name"]
+            confs = conf.load_config_module(line)
+            
+            if confs:
+                print "conf '%s' loaded successfully (param: %s)" % (line, confs["param"])
+            else:
+                print "error: no conf named '%s' found" % line
+        else:
+            print "error: no test given"
     
     def help_load(self):
         print "\n".join(["- load <file>", "Charge le fichier de configuration <file> pour ",
                          "faire les traitements necessaires"])
     
+    def do_run(self, line):
+        """Fonction pour lancer un benchmark sur la plateforme"""
+        
+        if line:
+            confs = conf.load_config_module(line)
+            
+            for c in confs["clients"]:
+                result = commands.server.run(Server.clients[c], Server.sport, line, confs)
+                
+                print "dist run '%s', result = %s" % (line, result["returnValue"])
+        else:
+            print "error: no test given"
+            
+    
     def do_list(self, line):
         """Listage des clients, envoie d'un heartbeat a partir de la liste"""
         
+        # listage des clients 
         if line == "clients":
-            print " Hote\t\t| Etat"
-            print "----------------+-------------"
-            
             for k, v in Server.clients.items():
-                print " %s\t| %r" % (k, commands.server.heartbeat(v, Server.sport))
+                result = commands.server.heartbeat(v, Server.sport)
+                
+                print " %s: %r" % (k, result["returnValue"])
+        # type de listage inconnu
+        else:
+            print "error: unrecognized type of listing"
     
     def help_list(self):
         print "\n".join(["- list clients", "Affiche la liste des clients avec etat"])
@@ -103,27 +121,11 @@ class ServerCmd(cmd.Cmd):
     
     def do_EOF(self, line):
         """EOF"""
+        
         return True
     
     def help_help(self):
         print "\n".join(["- help <topic>", "Affiche l'aide sur <topic>"])
-
-
-class ServerHandler(SocketServer.StreamRequestHandler):
-    """Request handler for the TCP Server"""
-
-    def handle(self):
-        # self.request is the TCP socket connected to the client
-        self.data = self.rfile.readline().strip()
-        print "{} wrote:".format(self.client_address[0])
-        print self.data
-        # just send back the same data, but upper-cased
-        self.request.sendall(self.data.upper())
-    
-
-class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
-    """Classe necessaire pour threader le serveur"""
-
     
 def main():
     """Fonction de main pour le serveur"""
@@ -131,14 +133,7 @@ def main():
     # parsage des arguments de la ligne de commande
     args = ServerArgumentParser().parse_args()
     
-    # config srv
-    Server.sport, Server.lport = args.sport, args.lport
-    
-    server = ThreadedTCPServer(("127.0.0.1", Server.lport), ServerHandler)
-    
     print __description__
-    
-    print "port: %s" % Server.sport
     
     # limitation verbosity a 3
     if args.verbose:
@@ -146,13 +141,6 @@ def main():
             args.verbose = 3
         
         print "[+] Lancement en mode verbeux (niveau: %i)" % args.verbose
-    
-    print "[+] Lancement du serveur en ecoute sur %s:%i" % ("127.0.0.1", Server.lport)
-    
-    # configuration du processus thread
-    server_thread = threading.Thread(target=server.serve_forever)
-    server_thread.daemon = True
-    server_thread.start()
     
     # lancement en mode interactif (CLI)
     if args.cli:
@@ -164,8 +152,6 @@ def main():
             print "[+] Lecture du fichier de benchmark '%s'" % args.bench_file
         else:
             print "error: missing file bench config"; return 1
-    
-    server.shutdown()
             
     return 0
         

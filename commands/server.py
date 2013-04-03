@@ -8,34 +8,36 @@ Created on 27 févr. 2013
 
 import socket, json
 
-def heartbeat(host, port):
-    """Fonction permettant d'envoyer des msgs de type heartbeat"""
+def dist_call(host, port, call, params=None, timeout=1):
+    """Fonction générique pour faire un appel distant"""
     
-    state = False
-    data = json.dumps({"command": "heartbeat"})
+    # requête envoyée au client
+    request = {"command": call, "params": params}
+    # réponse préfabriquée override si le client répond
+    response = {"command": call, "params": params, "returnValue": False}
 
-    # Create a socket (SOCK_STREAM means a TCP socket)
+    # Création de la socket en mode TCP
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    
-    # modification du timeout pour le heartbeat
-    sock.settimeout(0.1)
+    sock.settimeout(timeout)
     
     try:
-        # Connect to server and send data
         sock.connect((host, port))
-        sock.sendall(data + "\n")
+        sock.sendall(json.dumps(request) + "\n")
     
-        # Receive data from the server and shut down
-        received = sock.recv(1024)
-        
-        # receive response
-        response = json.loads(received)
-    
-        if "ok" == response["result"]:
-            state = True
+        response = json.loads(sock.recv(1024))
     except:
         pass
     finally:
         sock.close()
         
-    return state
+    return response
+
+def heartbeat(host, port):
+    """Fonction permettant d'envoyer des msgs de type heartbeat"""
+    
+    return dist_call(host, port, "heartbeat", timeout=0.1)
+
+def run(host, port, test, conf):
+    """Fonction permettant d'exécuter un test de benchmark"""
+    
+    return dist_call(host, port, "run", params={"test": test, "conf": conf})
