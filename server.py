@@ -15,8 +15,7 @@ import commands.server
 # definition des variables de description
 __program__ = "auto-fs-bench"
 __version__ = "0.1 (dev)"
-__description__ = "Executable serveur pour auto-fs-bench."
-
+__description__ = "auto-fs-bench executable"
 
 class Server:
     """Classe contenant les configurations serveur"""
@@ -58,7 +57,7 @@ class ServerCmd(cmd.Cmd):
     """Shell pour auto-fs-bench."""
     
     # message supplementaire CLI
-    intro = "CLI utility, type \"help\" for more information"
+    intro = "auto-fs-bench cmd utility. Type `help' for more information"
     # apparence du prompt
     prompt = "srv: "
     # séparateur dans menus aide
@@ -139,8 +138,6 @@ def main():
     
     # parsage des arguments de la ligne de commande
     args = ServerArgumentParser().parse_args()
-    
-    print __description__
     
     # limitation verbosity a 3
     if args.verbose:
