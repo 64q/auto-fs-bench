@@ -14,13 +14,14 @@ import SocketServer
 
 import commands.client
 
+# configuration client
 __program__ = "auto-fs-bench"
 __version__ = "0.1 (dev)"
 __description__ = "Executable client pour auto-fs-bench."
 
-# config srv
-__sport__ = 6969
+# config du client (tcpserver)
 __lport__ = 7979
+
 
 class ClientArgumentParser(argparse.ArgumentParser):
     """Argument Parser pour le serveur"""
@@ -32,12 +33,17 @@ class ClientArgumentParser(argparse.ArgumentParser):
         self.description = "%s Version %s" % (__description__, __version__)
         
         # ajout des paramètres de lancement
+        
+        # adresse du serveur de benchmark
         self.add_argument('server_addr', 
                           help="adresse du serveur de benchmark")
+        # lancement en mode deamon
         self.add_argument("-d", "--daemon", action="store_true", dest="daemon", 
                           help="lancement en demon")
+        # lancement en mode verbeux
         self.add_argument("-v", "--verbose", action="count", dest="verbose", 
                           help="parametrage de la verbosite")
+        # port d'écoute du client
         self.add_argument('--lport', default=7979, type=int, 
                           help="port d'ecoute du client (default: 7979)")
 
@@ -54,6 +60,7 @@ class ClientHandler(SocketServer.StreamRequestHandler):
         request = json.loads(self.data)
         
         # traitement des commandes recues
+        
         # heartbeat
         if request["command"] == "heartbeat":
             response = commands.client.heartbeat()
@@ -64,7 +71,7 @@ class ClientHandler(SocketServer.StreamRequestHandler):
         else:
             response = commands.client.error()
         
-        print "sent back: %s" % response
+        print ">> sent back: %s" % response
         
         self.request.sendall(response)
 
@@ -72,8 +79,10 @@ class ClientHandler(SocketServer.StreamRequestHandler):
 class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
     """Classe necessaire pour threader le client"""
 
-    
+
 def main(argv=None):
+    """Fonction de main pour le client"""
+        
     args = ClientArgumentParser().parse_args()
     
     # config srv
@@ -84,36 +93,17 @@ def main(argv=None):
     
     client = ThreadedTCPServer(("127.0.0.1", __lport__), ClientHandler)
     
+    # lancement en mode demon
     if args.daemon:
         client_thread = threading.Thread(target=client.serve_forever)
         client_thread.daemon = True
         client_thread.start()
+    # lancement en mode normal
     else:
         client.serve_forever()
-
-    #===========================================================================
-    # data = json.dumps(['foo', {'bar': ('baz', None, 1.0, 2)}])
-    # 
-    # # Create a socket (SOCK_STREAM means a TCP socket)
-    # sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    # 
-    # try:
-    #    # Connect to server and send data
-    #    sock.connect((args.server_addr, args.sport))
-    #    sock.sendall(data + "\n")
-    # 
-    #    # Receive data from the server and shut down
-    #    received = sock.recv(1024)
-    # finally:
-    #    sock.close()
-    # 
-    # print "Sent:     {}".format(data)
-    # print "Received: {}".format(received)
-    # 
-    # raw_input()
-    #===========================================================================
     
     return 0
+
 
 if __name__ == '__main__':
     sys.exit(main())

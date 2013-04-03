@@ -12,7 +12,7 @@ import argparse, cmd
 import conf
 import commands.server
 
-# definition de quelques variables internes au serveur
+# definition des variables de description
 __program__ = "auto-fs-bench"
 __version__ = "0.1 (dev)"
 __description__ = "Executable serveur pour auto-fs-bench."
@@ -36,18 +36,26 @@ class ServerArgumentParser(argparse.ArgumentParser):
         self.description = "%s Version %s" % (__description__, __version__)
         
         # ajout des paramètres de lancement
-        self.add_argument('bench_file', nargs="?", 
-                          help="fichier de benchmark a executer, optionnel si -c est renseigne")
-        self.add_argument("-c", "--cli", action="store_true", dest="cli", 
-                          help="lance la ligne de commande en mode interactif, ignore l'argument bench_file")
+        
+        # test à lancer
+        self.add_argument('bench_test', nargs="?",
+                          help="test de benchmark a lancer, optionnel si -c est renseigne")
+        # lancement en sous shell
+        self.add_argument("-s", "--shell", action="store_true", dest="shell", 
+                          help="lance la ligne de commande en mode interactif, ignore l'argument bench_test")
+        # lancement en mode verbeux
         self.add_argument("-v", "--verbose", action="count", dest="verbose", 
                           help="parametrage de la verbosite")
-        self.add_argument('--sport', default=7979, type=int, 
+        # fichier configuration du bench
+        self.add_argument("-c", "--conf", default="app.cfg", dest="conf",
+                          help="fichier config de l'application (default: app.cfg)")
+        # port d'envoi du serveur aux clients
+        self.add_argument("-p", "--port", default=7979, type=int, dest="port", 
                           help="port d'envoi du serveur (default: 7979)")
 
 
 class ServerCmd(cmd.Cmd):
-    """CLI pour auto-fs-bench."""
+    """Shell pour auto-fs-bench."""
     
     # message supplementaire CLI
     intro = "CLI utility, type \"help\" for more information"
@@ -120,13 +128,12 @@ class ServerCmd(cmd.Cmd):
         print "\n".join(["- version", "Affiche la version courante du serveur"])
     
     def do_EOF(self, line):
-        """EOF"""
-        
         return True
     
     def help_help(self):
         print "\n".join(["- help <topic>", "Affiche l'aide sur <topic>"])
-    
+
+
 def main():
     """Fonction de main pour le serveur"""
     
@@ -143,17 +150,18 @@ def main():
         print "[+] Lancement en mode verbeux (niveau: %i)" % args.verbose
     
     # lancement en mode interactif (CLI)
-    if args.cli:
+    if args.shell:
         ServerCmd().cmdloop()
     # lancement non interactif
     else:
-        # presence du fichier de config bench
-        if not args.bench_file is None:
-            print "[+] Lecture du fichier de benchmark '%s'" % args.bench_file
+        # renseignement du test à lancer
+        if not args.bench_test is None:
+            print "[+] Lancement du test de benchmark '%s'" % args.bench_test
         else:
-            print "error: missing file bench config"; return 1
+            print "error: no benchmark test given"; return 1
             
     return 0
-        
+
+     
 if __name__ == "__main__":
     sys.exit(main())

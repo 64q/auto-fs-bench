@@ -32,6 +32,11 @@ def dist_call(host, port, call, params=None, timeout=1):
         
     return response
 
+def test(host, port, modules):
+    """Fonction permettant de vérifier que les modules sont valides sur le client"""
+    
+    return dist_call(host, port, "test", params={"modules": modules})
+
 def heartbeat(host, port):
     """Fonction permettant d'envoyer des msgs de type heartbeat"""
     
