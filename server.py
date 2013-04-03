@@ -17,6 +17,7 @@ __program__ = "auto-fs-bench"
 __version__ = "0.1 (dev)"
 __description__ = "auto-fs-bench executable"
 
+
 class Server:
     """Classe contenant les configurations serveur"""
     
