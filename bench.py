@@ -123,7 +123,8 @@ if __name__ == "__main__":
     for k in res.keys():
         print k, ':'
         print '   return :', res[k]['return']
+        print '   files  :'
         for kb in res[k]['files'].keys():
-            print '  ',kb, '->', res[k]['files'][kb]
+            print '     ',kb, '->', res[k]['files'][kb]
     # print os.getcwd()
-    # os.system("pause")
+    os.system("pause")
