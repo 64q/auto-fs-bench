@@ -7,7 +7,7 @@ def test(workdir="./", var=""):
     return True
 
 def run(workdir="./", var=""):
-    sortie=os.popen("../bash-tools/dd.sh "+workdir+" "+var, "r").read()
+    sortie=os.popen("bash-tools/dd.sh "+workdir+" "+var, "r").read()
     return sortie
 
 def format(workdir="./", var=""):
