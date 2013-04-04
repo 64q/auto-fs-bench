@@ -39,3 +39,6 @@ nosetests.xml
 
 # tests folder ignore
 tests/
+
+#  data folder ignore
+data/
