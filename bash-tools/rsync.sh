@@ -13,25 +13,9 @@
 #  along with this program.  If not, see
 #  <http://www.gnu.org/licenses/>.
 
-#
-# pjdtest.sh 
-#
-
 . env.sh
 
-#$1 mount point
-#$2 levels
-#$3 directories per level
-#$4 files per directory
-#$5 file size (in blocks 8k for rozofs)
-#$6 file log
-pjdtest() {
-	flog=${WORKING_DIR}/pjdtest_`date "+%Y%m%d_%Hh%Mm%Ss"`_`basename $1`.log
-	cd $1
-	prove -r ${LOCAL_PJDTESTS} 2>&1 | tee -a $flog
-	cd ${WORKING_DIR}
-}
-
+	
 usage() {
 	echo "$0: <mount point>"
 	exit 0
@@ -39,6 +23,18 @@ usage() {
 
 [[ $# -lt 1 ]] && usage
 
-pjdtest $1
+[[ -z ${RSYNC_BINARY} ]] && echo "Can't find rsync." && exit -1
+[[ -z ${FDTREE_BINARY} ]] && echo "Can't find fdtree." && exit -1
 
+flog=${WORKING_DIR}/rsync_`date "+%Y%m%d_%Hh%Mm%Ss"`_`basename $1`.log
+tmpd="/tmp/$$"
+
+mkdir $tmpd
+echo "Begin fdtree: $(date +%d-%m-%Y--%H:%M:%S)" >> $flog
+${FDTREE_BINARY} -C -l 3 -d 15 -f 15 -s 2 -o $tmpd 2>&1 | tee -a $flog
+echo "End fdtree and begin rsync: $(date +%d-%m-%Y--%H:%M:%S)" >> $flog
+time ${RSYNC_BINARY} -avz $tmpd $1 2>&1 | tee -a $flog
+echo "End rsync and Begin rm: $(date +%d-%m-%Y--%H:%M:%S)" >> $flog
+time rm -rf $1/* 2>&1 | tee -a $flog
+echo "End rm: $(date +%d-%m-%Y--%H:%M:%S)" >> $flog
 exit 0

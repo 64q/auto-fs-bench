@@ -3,21 +3,25 @@
 
 import os
 
-def test(var=""):
+def test(workdir="./", var=""):
     print("sketest")
-    return
+    return "sketest"
 
-def run(var=""):
+def run(workdir="./", var=""):
+    fichier = open(workdir+"res", "w")
+    fichier.write('Youpi !!!!!!!\n'+workdir) 
+    fichier.close()
+    # os.remove('res')
     print("skerun")
-    return
+    return "skerun"
 
-def format(var=""):
+def format(workdir="./", var=""):
     print("skeformat")
-    return
+    return "skeformat"
 
-def graph(var=""):
+def graph(workdir="./", var=""):
     print("skegraph")
-    return
+    return "skegraph"
 
 if __name__ == "__main__":
     os.system("pause")

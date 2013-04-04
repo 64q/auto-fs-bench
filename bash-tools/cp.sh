@@ -14,22 +14,30 @@
 #  <http://www.gnu.org/licenses/>.
 
 #
-# pjdtest.sh 
+# cp.sh 
 #
 
 . env.sh
 
-#$1 mount point
-#$2 levels
-#$3 directories per level
-#$4 files per directory
-#$5 file size (in blocks 8k for rozofs)
-#$6 file log
-pjdtest() {
-	flog=${WORKING_DIR}/pjdtest_`date "+%Y%m%d_%Hh%Mm%Ss"`_`basename $1`.log
-	cd $1
-	prove -r ${LOCAL_PJDTESTS} 2>&1 | tee -a $flog
-	cd ${WORKING_DIR}
+ROOT_FILENAME_TEST=file_test
+
+#$1 mountpoint
+do_cp()
+{
+    FILE_LOG=${WORKING_DIR}/cp_`date "+%Y%m%d_%Hh%Mm%Ss"`_`basename $1`.log
+	echo -e "size(KB)\t\tput(s)\tget(s)" > ${FILE_LOG}
+	for count in 1000 10000 100000 1000000 10000000; do
+		FILENAME=file_test
+		dd if=/dev/zero of=${FILENAME} bs=1024 count=${count} >/dev/null 2>&1
+
+		echo -ne "${count}" >> ${FILE_LOG}
+		echo -ne "\t\t`/usr/bin/time -f "%E" cp $FILENAME /$1 2>&1 | tr -d '\n'`" >> ${FILE_LOG}
+		rm -f ${FILENAME}
+		sleep 3;umount ${1};sleep 3;mount ${1};sleep 3;
+		echo -e "\t`/usr/bin/time -f "%E" cp $1/$FILENAME . 2>&1 | tr -d '\n'`" >> ${FILE_LOG}
+		rm -f ${1}/${FILENAME}
+	done;
+
 }
 
 usage() {
@@ -39,6 +47,7 @@ usage() {
 
 [[ $# -lt 1 ]] && usage
 
-pjdtest $1
+do_cp $1
 
 exit 0
+

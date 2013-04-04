@@ -3,10 +3,10 @@
 
 import os
 
-def test(var=""):
+def test(workdir="./", var=""):
     return
 
-def run(var=""):
+def run(workdir="./", var=""):
     sortie=os.popen("du -sh "+var, "r").read()
     # fichier = open("./res", "w")
     # fichier.write(sortie) 
@@ -14,7 +14,7 @@ def run(var=""):
     # os.remove('res')
     return sortie
 
-def format(var=""):
+def format(workdir="./", var=""):
     text = ""
     chaine = "0123456789OKMGokmg"
     for c in var:
@@ -24,7 +24,7 @@ def format(var=""):
             break
     return text
 
-def graph(var=""):
+def graph(workdir="./", var=""):
     # import matplotlib
     # matplotlib.use('Agg')
     # from pylab import *

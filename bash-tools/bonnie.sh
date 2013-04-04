@@ -13,24 +13,8 @@
 #  along with this program.  If not, see
 #  <http://www.gnu.org/licenses/>.
 
-#
-# pjdtest.sh 
-#
-
 . env.sh
 
-#$1 mount point
-#$2 levels
-#$3 directories per level
-#$4 files per directory
-#$5 file size (in blocks 8k for rozofs)
-#$6 file log
-pjdtest() {
-	flog=${WORKING_DIR}/pjdtest_`date "+%Y%m%d_%Hh%Mm%Ss"`_`basename $1`.log
-	cd $1
-	prove -r ${LOCAL_PJDTESTS} 2>&1 | tee -a $flog
-	cd ${WORKING_DIR}
-}
 
 usage() {
 	echo "$0: <mount point>"
@@ -39,6 +23,10 @@ usage() {
 
 [[ $# -lt 1 ]] && usage
 
-pjdtest $1
+[[ -z ${BONNIE_BINARY} ]] && echo "Can't find bonnie++." && exit -1
+
+flog=${WORKING_DIR}/bonnie++_`date "+%Y%m%d_%Hh%Mm%Ss"`_`basename $1`.log
+#${BONNIE_BINARY} -d $1 -n 200 -m testedhost -s 16384 -f -u nobody 2>&1 | tee $flog
+${BONNIE_BINARY} -d $1 -n 5 -s 16384 -f -u nobody 2>&1 | tee $flog
 
 exit 0

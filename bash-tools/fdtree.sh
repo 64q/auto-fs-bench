@@ -14,7 +14,7 @@
 #  <http://www.gnu.org/licenses/>.
 
 #
-# pjdtest.sh 
+# fdtree.sh 
 #
 
 . env.sh
@@ -25,11 +25,9 @@
 #$4 files per directory
 #$5 file size (in blocks 8k for rozofs)
 #$6 file log
-pjdtest() {
-	flog=${WORKING_DIR}/pjdtest_`date "+%Y%m%d_%Hh%Mm%Ss"`_`basename $1`.log
-	cd $1
-	prove -r ${LOCAL_PJDTESTS} 2>&1 | tee -a $flog
-	cd ${WORKING_DIR}
+fdtree() {
+	flog=${WORKING_DIR}/fdtree_`date "+%Y%m%d_%Hh%Mm%Ss"`_`basename $1`_$2_$3_$4_$5.log
+	${FDTREE_BINARY} -l $2 -d $3 -f $4 -s $5 -o $1 2>&1 | tee -a $flog
 }
 
 usage() {
@@ -39,6 +37,11 @@ usage() {
 
 [[ $# -lt 1 ]] && usage
 
-pjdtest $1
+[[ -z ${FDTREE_BINARY} ]] && echo "Can't find fdtree." && exit -1
+
+fdtree $1 500 1 0 0
+fdtree $1 1 20000 0 0
+fdtree $1 1 1 20000 1
+fdtree $1 6 5 6 1
 
 exit 0

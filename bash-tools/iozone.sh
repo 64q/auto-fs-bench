@@ -13,25 +13,9 @@
 #  along with this program.  If not, see
 #  <http://www.gnu.org/licenses/>.
 
-#
-# pjdtest.sh 
-#
-
 . env.sh
 
-#$1 mount point
-#$2 levels
-#$3 directories per level
-#$4 files per directory
-#$5 file size (in blocks 8k for rozofs)
-#$6 file log
-pjdtest() {
-	flog=${WORKING_DIR}/pjdtest_`date "+%Y%m%d_%Hh%Mm%Ss"`_`basename $1`.log
-	cd $1
-	prove -r ${LOCAL_PJDTESTS} 2>&1 | tee -a $flog
-	cd ${WORKING_DIR}
-}
-
+	
 usage() {
 	echo "$0: <mount point>"
 	exit 0
@@ -39,6 +23,22 @@ usage() {
 
 [[ $# -lt 1 ]] && usage
 
-pjdtest $1
+[[ -z ${IOZONE_BINARY} ]] && echo "Can't find iozone." && exit -1
+
+#check if mountable
+#mountable="`grep -cE ^rozofsmount.*$1.*exporthost=$2,exportpath=$3 /etc/fstab`"
+#if [[ $mountable == "0" ]]
+#then
+#    echo "$1 is not mountable"
+#    echo "add: line below in your /etc/fstab" 
+#    echo "rozofsmount     `readlink -f $1`     rozofs  exporthost=$2,exportpath=$3,_netdev  0       0"
+#    exit 0
+#fi
+
+
+ftest=$1/$$.dat
+flog=${WORKING_DIR}/iozone_`date "+%Y%m%d_%Hh%Mm%Ss"`_`basename $1`.log
+${IOZONE_BINARY} -ac $1 -f $ftest | tee $flog
+#${IOZONE_BINARY} -ac -f $ftest 2>&1 | tee $flog
 
 exit 0
