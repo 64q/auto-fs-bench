@@ -9,7 +9,7 @@ def test(workdir="./", var=""):
 
 def run(workdir="./", var=""):
     fichier = open(workdir+"res", "w")
-    fichier.write('Youpi !!!!!!!\n'+workdir) 
+    fichier.write('-file-\n'+workdir) 
     fichier.close()
     # os.remove('res')
     print("skerun")

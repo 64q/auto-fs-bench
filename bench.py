@@ -62,10 +62,10 @@ def modLaunch(modfunc, func, param="", nb=1):
 
 
     threads = [None] * nb
-    results = [None] * nb
+    results = dict()
 
     for i in range(nb):
-        threads[i] = threading.Thread(None, context, None, (pfonc, results, i, param))
+        threads[i] = threading.Thread(None, context, None, (pfonc, results, 'thread_'+str(i), param))
         threads[i].start()
 
     for i in range(nb):
@@ -73,7 +73,7 @@ def modLaunch(modfunc, func, param="", nb=1):
 
     return results
 
-def context(pfonc, result, number, param=""):
+def context(pfonc, result, name, param=""):
     val = 0
     ok = False
     while not ok:
@@ -87,18 +87,20 @@ def context(pfonc, result, number, param=""):
     
     # Appel de la fonction de bench
     # ajout du chemin du dossier réservé en premier paramètre
-    result[number] = [pfonc('./'+rep+'/', param)]
+    result[name] = dict()
+    result[name]['return'] = pfonc('./'+rep+'/', param)
     
     print "res>", pfonc('./'+rep+'/', param)
 
     content = os.listdir(rep)
     # Ajouter les fichiers aux résultats
+    tmp = dict()
     for x in content:
-        tmp = [x]
         f = open('./'+rep+'/'+x, 'r')
-        tmp += [f.read()]
+        tmp[x] = f.read()
         f.close()
-        result[number] += [tmp]
+    
+    result[name]['files'] = tmp
 
     # vider le dossier
     for x in content:
@@ -116,6 +118,12 @@ if __name__ == "__main__":
     print "Resultat :"
     print len(mod), "module(s) charge(s)"
     print mod.keys()
-    print modLaunch(mod['skeleton'], "run", nb=10)
+    res = modLaunch(mod['skeleton'], "run", nb=10)
+    print res.keys()
+    for k in res.keys():
+        print k, ':'
+        print '   return :', res[k]['return']
+        for kb in res[k]['files'].keys():
+            print '  ',kb, '->', res[k]['files'][kb]
     # print os.getcwd()
     # os.system("pause")
