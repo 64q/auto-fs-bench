@@ -8,16 +8,20 @@ Created on 27 févr. 2013
 
 import json
 
-def error():
+import bench
+
+def error(reason="Generic error"):
     """Fonction permettant de notifier une erreur au serveur"""
     
-    return json.dumps({"command": "error"})
+    return json.dumps({"command": "error", "returnValue": reason})
 
 def test(params):
     """ TODO TODO TODO Fonction permettant de tester si le client est correctement initialisé"""
     
     for m in params["modules"]:
-        pass
+        print m
+        
+    return json.dumps({"command": "run", "returnValue": True})
 
 def heartbeat():
     """Réponse à un heartbeat"""
@@ -27,6 +31,16 @@ def heartbeat():
 def run(params):
     """Fonction pour effectuer un test de benchmark"""
     
-    output = "Test '%s' effectue, config = %s" % (params["test"], params["conf"])
+    output = dict()
+    
+    mods = bench.modLoad(params["modules"])
+    
+    for k in params["modules"]:
+        module = mods[k]
+        
+        if module is None:
+            return error()
+        else:
+            output[k] = module.format(module.run())
     
     return json.dumps({"command": "run", "returnValue": output})

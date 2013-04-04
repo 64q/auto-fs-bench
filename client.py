@@ -59,6 +59,8 @@ class ClientHandler(SocketServer.StreamRequestHandler):
         
         request = json.loads(self.data)
         
+        print ">>>>", request
+        
         # traitement des commandes recues
         
         # heartbeat
@@ -67,6 +69,9 @@ class ClientHandler(SocketServer.StreamRequestHandler):
         # run
         elif request["command"] == "run":
             response = commands.client.run(request["params"])
+        # test
+        elif request["command"] == "test":
+            response = commands.client.test(request["params"])
         # commande inconnue
         else:
             response = commands.client.error()
