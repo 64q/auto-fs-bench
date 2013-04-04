@@ -51,7 +51,7 @@ def modCheck(mod):
             print '   fonction', f, 'manquante'
     return not error
 
-def modLaunch(modfunc, func, param=[], nb=1):
+def modLaunch(modfunc, func, param="", nb=1):
     """Lancement d'une instance d'une fonction d'un module"""
     # récupérer la fonction voulue
     pfonc = getattr(modfunc, func)
@@ -73,7 +73,7 @@ def modLaunch(modfunc, func, param=[], nb=1):
 
     return results
 
-def context(pfonc, result, number, param = []):
+def context(pfonc, result, number, param=""):
     val = 0
     ok = False
     while not ok:
@@ -88,6 +88,8 @@ def context(pfonc, result, number, param = []):
     # Appel de la fonction de bench
     # ajout du chemin du dossier réservé en premier paramètre
     result[number] = [pfonc('./'+rep+'/', param)]
+    
+    print "res>", pfonc('./'+rep+'/', param)
 
     content = os.listdir(rep)
     # Ajouter les fichiers aux résultats

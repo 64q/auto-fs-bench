@@ -8,9 +8,9 @@ def test(workdir="./", var=""):
 
 def run(workdir="./", var=""):
     sortie=os.popen("du -sh "+var, "r").read()
-    # fichier = open("./res", "w")
-    # fichier.write(sortie) 
-    # fichier.close()
+    #fichier = open(workdir + "/res", "w")
+    #fichier.write("hehe") 
+    #fichier.close()
     # os.remove('res')
     return sortie
 

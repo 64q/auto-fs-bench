@@ -41,6 +41,6 @@ def run(params):
         if module is None:
             return error()
         else:
-            output[k] = module.format(module.run())
+            output[k] = bench.modLaunch(module, "run", params["path"], nb=params["times"])
     
     return json.dumps({"command": "run", "returnValue": output})
