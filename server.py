@@ -35,16 +35,13 @@ class ServerArgumentParser(argparse.ArgumentParser):
         
         # test à lancer
         self.add_argument('bench_test', nargs="?",
-                          help="test de benchmark a lancer, optionnel si -c est renseigne")
+                          help="test de benchmark a lancer (exemple: config.tests.example), optionnel si -c est renseigne")
         # lancement en sous shell
-        self.add_argument("-s", "--shell", action="store_true", dest="shell", 
+        self.add_argument("-s", "--shell", action="store_true", dest="shell",
                           help="lance la ligne de commande en mode interactif, ignore l'argument bench_test")
         # lancement en mode verbeux
         self.add_argument("-v", "--verbose", action="count", dest="verbose", 
                           help="parametrage du mode verbose")
-        # fichier configuration du bench
-        self.add_argument("-c", "--conf", default="app.cfg", dest="conf",
-                          help="fichier config de l'application (default: app.cfg)")
         # port d'envoi du serveur aux clients
         self.add_argument("-p", "--port", default=config.server.send_port, type=int, dest="port", 
                           help="port d'envoi du serveur (default: 7979)")
@@ -70,55 +67,50 @@ class ServerCmd(cmd.Cmd):
         """Fonction pour lancer un benchmark sur la plateforme"""
         
         if test:
-            # build de la configuration serveur
-            server_config = core.manager.build_server_config(test)
-            clients_results = dict()
-            threads = list()
-            
-            for client in server_config.clients:
-                # configuration du client à envoyer
-                client_config = core.manager.build_client_config(server_config, client)
-                client_ip_addr = config.server.clients[client]
-
-                # configuration et lancement du thread
-                thread = core.utils.threads_create_and_start(context, (clients_results, client, (client_ip_addr, config.server.send_port, client_config)))
-
-                # ajout dans la liste des threads
-                threads.append(thread)
+            try:
+                # build de la configuration serveur
+                server_config = core.manager.build_server_config(test)
+                clients_results = dict()
+                threads = list()
                 
-            core.utils.threads_join_all(threads)
-            
-            # lecture des résultats obtenus et stockage
-            for module in server_config.modules:
-                # ouverture du fichier en écriture
-                moduledir = core.manager.generate_moduledir(server_config, module)
-                filename = core.manager.generate_filename(server_config, module)
-                # ouverture en mode append du fichier
-                csvfile = open(filename, "ab")
-                csvwriter = csv.writer(csvfile)
+                for client in server_config.clients:
+                    # configuration du client à envoyer
+                    client_config = core.manager.build_client_config(server_config, client)
+                    client_ip_addr = config.server.clients[client]
+
+                    # configuration et lancement du thread
+                    thread = core.utils.threads_create_and_start(context, 
+                        (clients_results, client, (client_ip_addr, config.server.send_port, client_config)))
+
+                    # ajout dans la liste des threads
+                    threads.append(thread)
+                    
+                core.utils.threads_join_all(threads)
                 
+                # lecture des résultats obtenus et stockage
                 # écriture des résultats de chacun des clients
                 for client, result in clients_results.iteritems():
+                    # core.transmission.check_transmission(result)
 
-                    print ">> client '%s' returns '%s'" % (client, result)
+                    for modname, threads_results in result["returnValue"].iteritems():
+                        # ouverture en mode append du fichier
+                        moduledir = core.manager.generate_moduledir(server_config, modname)
+                        filename = core.manager.generate_filename(server_config, modname)
+                        csvfile = open(filename, "ab")
 
-                    try:
-                        core.transmission.check_transmission(result)
-
-                        for thid, thout in result["returnValue"][module].iteritems():
-                            csvwriter.writerow([client + "_" + thid, thout["return"]])
+                        for thread_id, thread_content in threads_results.iteritems():
+                            # écriture de la ligne de résultat 'return'
+                            core.utils.csv_write_line(csvfile, [client + "_" + thread_id, thread_content["return"]])
 
                             # création des fichiers de sortie du module de benchmark
-                            for fn, ct in thout["files"].iteritems():
+                            for fn, ct in thread_content["files"].iteritems():
                                 fp = open(moduledir + "/" + fn, "w")
                                 fp.write(ct)
                                 fp.close()
 
-                    except core.errors.ClientTransmissionError as e:
-                        csvwriter.writerow([client, e.strerror])
-                    
-                csvfile.close()
-
+                        csvfile.close()
+            except ImportError as e:
+                print "error: %s" % e
         else:
             print "error: no test given"
             
