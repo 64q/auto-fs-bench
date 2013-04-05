@@ -1,10 +1,12 @@
 #encoding: utf-8
 
-'''
-Created on 27 févr. 2013
+"""
+Fichier permettant de manipuler le client auto-fs-bench
+
+A appeller avec `python server.py [options] server_addr'
 
 @author: Quentin
-'''
+"""
 
 import sys
 import json, argparse
@@ -83,7 +85,6 @@ class ClientHandler(SocketServer.StreamRequestHandler):
 
 class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
     """Classe necessaire pour threader le client"""
-
 
 def main(argv=None):
     """Fonction de main pour le client"""

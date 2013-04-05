@@ -1,33 +1,25 @@
 #encoding: utf-8
 
 """
-Created on 26 févr. 2013
+Fichier permettant de manipuler le serveur auto-fs-bench
+
+A appeller avec `python server.py [options]'
 
 @author: Quentin
 """
 
 import sys, os
 import argparse, cmd
+import csv
 
-import csv, shutil, threading
-
-import base.conf, base.manager
+import core.manager
 import commands.server
+import config.server
 
 # definition des variables de description
 __program__ = "auto-fs-bench"
 __version__ = "0.1 (dev)"
 __description__ = "auto-fs-bench executable"
-
-
-class Server:
-    """Classe contenant les configurations serveur"""
-    
-    clients = base.conf.load_config_app("clients")
-    
-    sport = 7979
-    
-    save_dir = "data/"
 
 
 class ServerArgumentParser(argparse.ArgumentParser):
@@ -49,7 +41,7 @@ class ServerArgumentParser(argparse.ArgumentParser):
                           help="lance la ligne de commande en mode interactif, ignore l'argument bench_test")
         # lancement en mode verbeux
         self.add_argument("-v", "--verbose", action="count", dest="verbose", 
-                          help="parametrage de la verbosite")
+                          help="parametrage du mode verbose")
         # fichier configuration du bench
         self.add_argument("-c", "--conf", default="app.cfg", dest="conf",
                           help="fichier config de l'application (default: app.cfg)")
@@ -74,73 +66,69 @@ class ServerCmd(cmd.Cmd):
     def default(self, line):
         print "error: unrecognized command '%s'." % line
     
-    #===========================================================================
-    # def do_load(self, line):
-    #    if line:
-    #        confs = conf.load_config_module(line)
-    #        
-    #        if confs:
-    #            print "conf '%s' loaded successfully (param: %s)" % (line, confs["param"])
-    #        else:
-    #            print "error: no conf named '%s' found" % line
-    #    else:
-    #        print "error: no test given"
-    # 
-    # def help_load(self):
-    #    print "\n".join(["- load <file>", "Charge le fichier de configuration <file> pour ",
-    #                     "faire les traitements necessaires"])
-    #===========================================================================
-    
-    def do_run(self, line):
+    def do_run(self, test):
         """Fonction pour lancer un benchmark sur la plateforme"""
         
-        if line:
-            sv_config = base.manager.build_sv_config(line)
-            cl_results = dict()
-            threads = dict()
+        if test:
+            # build de la configuration serveur
+            server_config = core.manager.build_server_config(test)
+            clients_results = dict()
+            threads = list()
             
-            # lancement des tests en parallèle (TODO)
-            for client, client_conf in sv_config["clients"].iteritems():
+            for client in server_config.clients:
                 # configuration du client à envoyer
-                cl_config = base.manager.build_cl_config(sv_config, client_conf)
-                threads[client] = threading.Thread(None, context, None, (cl_results, client, (Server.clients[client], Server.sport, line, cl_config)))
+                client_config = core.manager.build_client_config(server_config, client)
+                client_ip_addr = config.server.clients[client]
+
+                # configuration et lancement du thread
+                thread = core.utils.threads_create_and_start(context, (clients_results, client, (client_ip_addr, config.server.send_port, client_config)))
+
+                # ajout dans la liste des threads
+                threads.append(thread)
                 
-                threads[client].start()
-                
-            for client in sv_config["clients"]:
-                threads[client].join()
+            core.utils.threads_join_all(threads)
             
             # lecture des résultats obtenus et stockage
-            for module in sv_config["modules"]:
+            for module in server_config.modules:
                 # ouverture du fichier en écriture
-                csvfile = open(base.manager.filepath(sv_config, module), "ab")
+                moduledir = core.manager.generate_moduledir(server_config, module)
+                filename = core.manager.generate_filename(server_config, module)
+                # ouverture en mode append du fichier
+                csvfile = open(filename, "ab")
                 csvwriter = csv.writer(csvfile)
                 
-                # écriture des résultat de chacun des clients
-                for client, client_conf in sv_config["clients"].iteritems():
-                    checking = base.transmission.check_transmission(cl_results[client])
-                    
-                    if True == checking:
-                        csvwriter.writerow([client, cl_results[client]["returnValue"][module]])
-                    else:
-                        print checking
+                # écriture des résultats de chacun des clients
+                for client, result in clients_results.iteritems():
+
+                    print "client '%s' returns '%s'" % (client, result)
+
+                    try:
+                        core.transmission.check_transmission(result)
+
+                        for thid, thout in result["returnValue"][module].iteritems():
+                            csvwriter.writerow([client + "_" + thid, thout["return"]])
+                    except core.errors.ClientTransmissionError as e:
+                        csvwriter.writerow([client, e.strerror])
                     
                 csvfile.close()
-            
-            # copie de la configuration du test dans le dossier de sauvegarde
-            shutil.copyfile("conf/" + line + ".cfg", sv_config["dirpath"] + "/" + line + ".cfg")
+
         else:
             print "error: no test given"
             
     
-    def do_test(self, line):
+    def do_test(self, test):
         """Fonction permettant de tester si un benchmark est lançable"""
         
-        if line:
-            for c in Server.clients:
-                result = commands.server.test(Server.clients[c], Server.sport, line.split())
+        if test:
+            print "Test de configuration du test '%s'" % test
+
+            for client, ip in config.server.clients.iteritems():
+                result = commands.server.test(ip, config.server.send_port, test)
                 
-                print "%s: %r" % (c, result)
+                if result:
+                    print "%s: %s" % (client, "Operationnel")
+                else:
+                    print "%s: %s" % (client, "En erreur")
         else:
             print "error: no test given"
     
@@ -149,25 +137,31 @@ class ServerCmd(cmd.Cmd):
         
         # listage des clients 
         if line == "clients":
-            for k, v in Server.clients.items():
-                result = commands.server.heartbeat(v, Server.sport)
+            print "Test de heartbeat des clients"
+
+            for client, ip in config.server.clients.iteritems():
+                result = commands.server.heartbeat(ip, config.server.send_port)
                 
-                print " %s: %r" % (k, result["returnValue"])
+                if result:
+                    print "  %s: %s" % (client, "Online")
+                else:
+                    print "  %s: %s" % (client, "Offline")
+
         # type de listage inconnu
         else:
             print "error: unrecognized type of listing"
     
     def help_list(self):
-        print "\n".join(["- list clients", "Affiche la liste des clients avec etat"])
+        print "\n".join(["- list clients", "Affiche la liste des clients avec leur etat"])
     
     def do_save_dir(self, line):
         if line:
             if os.path.isdir(line):
-                Server.save_dir = line
+                config.server.save_dir = line
             else:
                 print "error: invalid dir '%s'" % line
         else:
-            print "current dir is '%s'" % Server.save_dir
+            print "current dir is '%s'" % config.server.save_dir
     
     def do_exit(self, line):
         print "exiting auto-fs-bench"; sys.exit()
@@ -188,8 +182,8 @@ class ServerCmd(cmd.Cmd):
         print "\n".join(["- help <topic>", "Affiche l'aide sur <topic>"])
 
 
-def context(result, client, params=()):
-    result[client] = commands.server.run(params[0], params[1], params[2], params[3])
+def context(result, client, params):
+    result[client] = commands.server.run(params[0], params[1], params[2])
 
 def main():
     """Fonction de main pour le serveur"""
