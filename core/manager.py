@@ -76,7 +76,7 @@ def build_server_config(test):
     """
     
     # chargement de la configuration de base
-    config = core.config.load_config_test(test)
+    config = core.utils.load_config_test(test)
     
     # ajout des variables de configuration supplémentaires
     setattr(config, "date", time.gmtime())
