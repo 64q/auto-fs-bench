@@ -29,6 +29,7 @@ def modLoad(liste = None):
         try:
             res = __import__("modules."+name)
             val = getattr(res, name)
+            # val = importlib.import_module('modules.'+name)
             if modCheck(val) :
                 mod[name] = val
             else :
@@ -89,10 +90,9 @@ def context(pfonc, result, name, param=""):
     # ajout du chemin du dossier réservé en premier paramètre
     result[name] = dict()
     result[name]['return'] = pfonc('./'+rep+'/', param)
-    
-    print "res>", pfonc('./'+rep+'/', param)
 
     content = os.listdir(rep)
+
     # Ajouter les fichiers aux résultats
     tmp = dict()
     for x in content:

@@ -17,12 +17,14 @@
 # dd.sh 
 #
 
-[[ $# -lt 2 ]] && exit 1
+[[ $# -lt 2 ]]  && usage
 
 WORKING_DIR=$1
 shift
 
-ROOT_FILENAME_TEST=file_test
+#TIME=`date +%s%N | cut -b1-13`
+
+ROOT_FILENAME_TEST=file_${$$}_
 
 #$1 mountpoint
 do_dd()
@@ -45,8 +47,10 @@ do_dd()
             time=`echo $result | cut -d ' ' -f 6`
             rate=`echo $result | cut -d ' ' -f 8`
             echo -ne "\t$time\t$rate" >> ${FILE_LOG}
-            #sleep 3;
-            #umount ${1};sleep 3;mount ${1};sleep 3;
+
+            # Conflit pour l'exécution parallèle
+            #sleep 3;umount ${1};sleep 3;mount ${1};sleep 3;
+
             result=`dd conv=fdatasync of=/dev/null if=${1}/${FILENAME} bs=${bs} count=${count} 2>&1 | tail -n +4 | tr -s ' '`
             time=`echo $result | cut -d ' ' -f 6`
             rate=`echo $result | cut -d ' ' -f 8`
@@ -59,11 +63,9 @@ do_dd()
 }
 
 usage() {
-    echo "$0: <mount point>"
+    echo "$0: <result dir> <mount point>"
     exit 0
 }
-
-[[ $# -lt 1 ]] && usage
 
 do_dd $1
 
