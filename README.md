@@ -5,16 +5,16 @@ Projet « auto-fs-bench »
 
 Application de benchmark automatisé sur systèmes de fichier
 
-# Installation
+## Installation
 
 Pour utiliser le logiciel, vous devez simplement cloner le dépôt `git clone https://github.com/KenTiN/auto-fs-bench.git`.
 
 * Pour lancer le client `python client.py`
 * Pour lancer le serveur `python server.py -s`
 
-# Configuration
+## Configuration
 
-## Configuration de la plateforme
+### Configuration de la plateforme
 
 Pour configurer la plateforme, il faut éditer le fichier `conf/server.py`. Vous devrez alors renseigner la liste des clients de votre plateforme,
 ainsi que d'autres informations documentées dans le fichier. N'oubliez pas de vérifier les chemins vers les scripts de benchmark ainsi que la
@@ -22,7 +22,7 @@ validité du répertoire de sauvegarde des données (le dossier doit exister !).
 
 Le fichier `conf/client.py` permet lui de configurer le comportement du client.
 
-## Configuration du test
+### Configuration du test
 
 Afin de déployer d'autres tests, vous pouvez être amené à créer un type de test bien particulier.
 
@@ -30,46 +30,46 @@ Pour créer un nouveau test, il faut copier le fichier d'exemple de config d'un 
 
 Voici un exemple de configuration.
 
-    ```python
-    # configuration du test de benchmark
+```python
+# configuration du test de benchmark
 
-    # nom du test de benchmark (doit être identique au nom du fichier)
-    name = "simple"
+# nom du test de benchmark (doit être identique au nom du fichier)
+name = "simple"
 
-    # commentaire éventuel sur le test
-    comment = "Simple benchmark example"
+# commentaire éventuel sur le test
+comment = "Simple benchmark example"
 
-    # modules de test à lancer
-    modules = ["dd"]
+# modules de test à lancer
+modules = ["dd"]
 
-    # liste des clients cibles du test
-    clients = {
-        "localhost": {"path": "/srv", "times": 1}
-    }
+# liste des clients cibles du test
+clients = {
+    "localhost": {"path": "/srv", "times": 1}
+}
 
-    # spécifications sur le système de fichier testé
-    fs = {
-        "name": "rozofs",
-        "version": "0.1"
-    }
+# spécifications sur le système de fichier testé
+fs = {
+    "name": "rozofs",
+    "version": "0.1"
+}
 
-    # fin de configuration du test
-    ```
+# fin de configuration du test
+```
 
 Il suffit donc de recopier ce squelette et de lancer ensuite la nouvelle configuration avec `run config`.
 
-# Utilisation
+## Utilisation
 
 Le serveur de tests permet de contrôler les clients lancés et de lancer des tests de benchmarks. Les résultats sont
 ensuite directement rapatriés sur le serveurs et stockés dans une arborescence logique.
 
-## Liste des commandes du shell serveur
+### Liste des commandes du shell serveur
 
 * `list clients` permet de lister les clients lancés sur la plateforme
 * `test [test]` permet de tester si un test est valide et lançable
 * `run [test]` permet de lancer un test de benchmark
 
-# Développement
+## Développement
 
 Pour développer dans les meilleures conditions, veuillez respecter les quelques
 règles élémentaires détaillées ci-dessous.
@@ -82,7 +82,7 @@ de garantir la bonne prise en charge de l'encodage.
 Les fichiers de test de configuration devront être placés dans le dossier `tests/`
 pour être ignoré par Git.
 
-## Structure du projet
+### Structure du projet
 
 Le projet est découpé en modules pythons
 
@@ -95,7 +95,7 @@ Le projet est découpé en modules pythons
     client.py   -- executable pour lancer le client
 
 
-# Auteurs
+## Auteurs
 
 * Blin Olivier
 * Lebourgeois Quentin
@@ -104,7 +104,7 @@ Pour nous contacter, veuillez nous envoyer un mail ou message directement sur Gi
 
 Contact universitaire, <prenom.nom@etu.univ-nantes.fr>
 
-# Licence
+## Licence
 
 	auto-fs-bench, automated benchmark software.
     Copyright (C) 2013  O. Blin, Q. Lebourgeois
