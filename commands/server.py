@@ -6,13 +6,13 @@ Created on 27 févr. 2013
 @author: Quentin
 '''
 
-import core.transmission, core.config, core.errors
+import core.transmission, core.utils, core.errors
 
 
 def test(host, port, test):
     """Fonction permettant de vérifier que le test est valide sur le client"""
     
-    config = core.config.load_config_test(test)
+    config = core.utils.load_config_test(test)
     modules = config.modules
 
     try:
