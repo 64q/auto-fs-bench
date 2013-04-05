@@ -107,6 +107,13 @@ class ServerCmd(cmd.Cmd):
 
                         for thid, thout in result["returnValue"][module].iteritems():
                             csvwriter.writerow([client + "_" + thid, thout["return"]])
+
+                            # création des fichiers de sortie du module de benchmark
+                            for fn, ct in thout["files"].iteritems():
+                                fp = open(moduledir + "/" + fn, "w")
+                                fp.write(ct)
+                                fp.close()
+
                     except core.errors.ClientTransmissionError as e:
                         csvwriter.writerow([client, e.strerror])
                     
