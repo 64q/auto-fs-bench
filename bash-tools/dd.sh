@@ -45,7 +45,7 @@ do_dd()
             time=`echo $result | cut -d ' ' -f 6`
             rate=`echo $result | cut -d ' ' -f 8`
             echo -ne "\t$time\t$rate" >> ${FILE_LOG}
-            sleep 3;
+            #sleep 3;
             #umount ${1};sleep 3;mount ${1};sleep 3;
             result=`dd conv=fdatasync of=/dev/null if=${1}/${FILENAME} bs=${bs} count=${count} 2>&1 | tail -n +4 | tr -s ' '`
             time=`echo $result | cut -d ' ' -f 6`
