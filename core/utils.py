@@ -41,6 +41,16 @@ def csv_write_header(filename, config, module):
     csvfile.close()
 
 
+def csv_write_line(fp, line=[]):
+    """
+    Cette fonction permet d'écrire une ligne sur le fichier csv
+    """
+
+    # insertion du header de fichier CSV
+    csvwriter = csv.writer(fp)
+    csvwriter.writerow(line)
+
+
 def load_config_client():
     """Charge la configuration du client"""
     

@@ -17,11 +17,11 @@ name = "quentin"
 comment = "Test de benchmark de Quentin"
 
 # modules de test à lancer
-modules = ["dd"]
+modules = ["dd", "du"]
 
 # liste des clients cibles du test
 clients = {
-    "raspberry": {"path": "/dev/zero", "times": 1}
+    "raspberry": {"path": "/srv", "times": 1}
 }
 
 # spécifications sur le système de fichier testé
