@@ -37,7 +37,7 @@ def send_to_client(host, port, call, params=None, timeout=1):
                 done = True
             except socket.error:
                 print "no data received"
-                time.sleep(0.1)
+                time.sleep(1)
     except socket.timeout:
         raise core.errors.ClientTimeoutError("client '%s' timeout" % host)
     finally:
