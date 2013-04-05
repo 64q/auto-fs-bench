@@ -6,22 +6,35 @@ Created on 27 févr. 2013
 @author: Quentin
 '''
 
-import base.transmission
+import core.transmission, core.config, core.errors
 
 
-def test(host, port, modules):
-    """Fonction permettant de vérifier que les modules sont valides sur le client"""
+def test(host, port, test):
+    """Fonction permettant de vérifier que le test est valide sur le client"""
     
-    return base.transmission.send_to_client(host, port, "test", params={"modules": modules})
+    config = core.config.load_config_test(test)
+    modules = config.modules
+
+    try:
+        result = core.transmission.send_to_client(host, port, "test", params={"modules": modules})
+
+        return result["returnValue"]
+    except core.errors.ClientTimeoutError:
+        return False
 
 
 def heartbeat(host, port):
     """Fonction permettant d'envoyer des msgs de type heartbeat"""
     
-    return base.transmission.send_to_client(host, port, "heartbeat", timeout=0.1)
+    try:
+        result = core.transmission.send_to_client(host, port, "heartbeat", timeout=0.1)
+
+        return result["returnValue"]
+    except core.errors.ClientTimeoutError:
+        return False
 
 
-def run(host, port, test, conf):
+def run(host, port, conf):
     """Fonction permettant d'exécuter un test de benchmark"""
     
-    return base.transmission.send_to_client(host, port, "run", params=conf)
+    return core.transmission.send_to_client(host, port, "run", params=conf)
