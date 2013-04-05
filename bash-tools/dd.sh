@@ -24,7 +24,7 @@ shift
 
 #TIME=`date +%s%N | cut -b1-13`
 
-ROOT_FILENAME_TEST=file_${$$}_
+ROOT_FILENAME_TEST="file_$$_"
 
 #$1 mountpoint
 do_dd()
