@@ -14,15 +14,12 @@ import threading
 
 import SocketServer
 
-import commands.client
+import config.client, commands.client
 
 # configuration client
 __program__ = "auto-fs-bench"
 __version__ = "0.1 (dev)"
-__description__ = "Executable client pour auto-fs-bench."
-
-# config du client (tcpserver)
-__lport__ = 7979
+__description__ = "auto-fs-bench client executable"
 
 
 class ClientArgumentParser(argparse.ArgumentParser):
@@ -36,9 +33,6 @@ class ClientArgumentParser(argparse.ArgumentParser):
         
         # ajout des paramètres de lancement
         
-        # adresse du serveur de benchmark
-        self.add_argument('server_addr', 
-                          help="adresse du serveur de benchmark")
         # lancement en mode deamon
         self.add_argument("-d", "--daemon", action="store_true", dest="daemon", 
                           help="lancement en demon")
@@ -46,7 +40,7 @@ class ClientArgumentParser(argparse.ArgumentParser):
         self.add_argument("-v", "--verbose", action="count", dest="verbose", 
                           help="parametrage de la verbosite")
         # port d'écoute du client
-        self.add_argument('--lport', default=7979, type=int, 
+        self.add_argument("-p", "--port", dest="port", default=config.client.listen_port, type=int, 
                           help="port d'ecoute du client (default: 7979)")
 
 
@@ -57,12 +51,10 @@ class ClientHandler(SocketServer.StreamRequestHandler):
         # self.request is the TCP socket connected to the client
         self.data = self.rfile.readline().strip()
         
-        print "receive from {}".format(self.client_address[0])
-        
         request = json.loads(self.data)
-        
-        print ">>>>", request
-        
+
+        print "Receive from {0} request >> {1}".format(self.client_address[0], request)
+
         # traitement des commandes recues
         
         # heartbeat
@@ -76,9 +68,9 @@ class ClientHandler(SocketServer.StreamRequestHandler):
             response = commands.client.test(request["params"])
         # commande inconnue
         else:
-            response = commands.client.error()
+            response = commands.client.error("Unknown command")
         
-        print ">> sent back: %s" % response
+        print "Sent back response >> %s" % response
         
         self.request.sendall(response)
 
@@ -86,20 +78,21 @@ class ClientHandler(SocketServer.StreamRequestHandler):
 class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
     """Classe necessaire pour threader le client"""
 
+
 def main(argv=None):
     """Fonction de main pour le client"""
         
     args = ClientArgumentParser().parse_args()
     
-    # config srv
-    __lport__ = args.lport
+    # config du port d'écoute
+    config.client.listen_port = args.port
     
     print __description__
-    print "[+] Lancement du client en connexion sur serveur %s:%i" % (args.server_addr, __lport__)
+    print "[+] Lancement du client en écoute sur le port '%i'" % (config.client.listen_port)
     
-    client = ThreadedTCPServer(("0.0.0.0", __lport__), ClientHandler)
+    client = ThreadedTCPServer(("0.0.0.0", config.client.listen_port), ClientHandler)
     
-    # lancement en mode demon
+    # lancement en mode demon (TODO)
     if args.daemon:
         client_thread = threading.Thread(target=client.serve_forever)
         client_thread.daemon = True
