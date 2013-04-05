@@ -52,7 +52,5 @@ def run(params):
             return error()
         else:
             output[k] = bench.modLaunch(module, "run", params["path"], nb=params["times"])
-
-            print "output> ", output[k]
     
     return json.dumps({"command": "run", "returnValue": output})

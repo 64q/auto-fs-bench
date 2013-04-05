@@ -8,7 +8,7 @@ A appeller avec `python server.py [options] server_addr'
 @author: Quentin
 """
 
-import sys
+import sys, signal
 import json, argparse
 import threading
 
@@ -81,16 +81,18 @@ class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
 
 def main(argv=None):
     """Fonction de main pour le client"""
-        
+    
+    # parsage des arguments    
     args = ClientArgumentParser().parse_args()
     
     # config du port d'écoute
     config.client.listen_port = args.port
     
     print __description__
-    print "[+] Lancement du client en écoute sur le port '%i'" % (config.client.listen_port)
+    print ">> Lancement du client en écoute sur le port '%i'" % (config.client.listen_port)
+    print ">> Appuyez sur Ctrl+C pour fermer le client"
     
-    client = ThreadedTCPServer(("0.0.0.0", config.client.listen_port), ClientHandler)
+    client_server = ThreadedTCPServer(("0.0.0.0", config.client.listen_port), ClientHandler)
     
     # lancement en mode demon (TODO)
     if args.daemon:
@@ -99,8 +101,8 @@ def main(argv=None):
         client_thread.start()
     # lancement en mode normal
     else:
-        client.serve_forever()
-    
+        client_server.serve_forever()
+
     return 0
 
 

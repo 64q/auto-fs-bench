@@ -100,7 +100,7 @@ class ServerCmd(cmd.Cmd):
                 # écriture des résultats de chacun des clients
                 for client, result in clients_results.iteritems():
 
-                    print "client '%s' returns '%s'" % (client, result)
+                    print ">> client '%s' returns '%s'" % (client, result)
 
                     try:
                         core.transmission.check_transmission(result)
@@ -122,7 +122,9 @@ class ServerCmd(cmd.Cmd):
         else:
             print "error: no test given"
             
-    
+    def help_run(self):
+        print "\n".join(["- run <test>", "Lance un test de benchmark"])
+
     def do_test(self, test):
         """Fonction permettant de tester si un benchmark est lançable"""
         
@@ -139,6 +141,9 @@ class ServerCmd(cmd.Cmd):
         else:
             print "error: no test given"
     
+    def help_test(self):
+        print "\n".join(["- test <test>", "Lance un test de validite sur les differents modules du test"])
+
     def do_list(self, line):
         """Listage des clients, envoie d'un heartbeat a partir de la liste"""
         
@@ -159,7 +164,7 @@ class ServerCmd(cmd.Cmd):
             print "error: unrecognized type of listing"
     
     def help_list(self):
-        print "\n".join(["- list clients", "Affiche la liste des clients avec leur etat"])
+        print "\n".join(["- list <clients>", "Affiche la liste des clients avec leur etat"])
     
     def do_save_dir(self, line):
         if line:
@@ -170,6 +175,9 @@ class ServerCmd(cmd.Cmd):
         else:
             print "current dir is '%s'" % config.server.save_dir
     
+    def help_save_dir(self):
+        print "\n".join(["- save_dir [path]", "Chemin de sauvegarde des tests"])
+
     def do_exit(self, line):
         print "exiting auto-fs-bench"; sys.exit()
         
@@ -181,9 +189,6 @@ class ServerCmd(cmd.Cmd):
         
     def help_version(self):
         print "\n".join(["- version", "Affiche la version courante du serveur"])
-    
-    def do_EOF(self, line):
-        return True
     
     def help_help(self):
         print "\n".join(["- help <topic>", "Affiche l'aide sur <topic>"])
@@ -197,6 +202,9 @@ def main():
     
     # parsage des arguments de la ligne de commande
     args = ServerArgumentParser().parse_args()
+
+    # mise a jour du port d'envoi
+    config.server.send_port = args.port
     
     # limitation verbosity a 3
     if args.verbose:
