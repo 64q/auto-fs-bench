@@ -21,8 +21,7 @@ modules = ["du"]
 
 # liste des clients cibles du test
 clients = {
-    "client1": {"path": "./", "times": 3},
-    "raspberry": {"path": "/home/drake", "times": 5}
+    "localhost": {"path": "./", "times": 5}
 }
 
 # spécifications sur le système de fichier testé

@@ -12,8 +12,7 @@ Pour l'utiliser, il suffit de l'importer dans les fichiers source.
 
 # liste des clients de l'application
 clients = dict(
-    client1 = "127.0.0.1",
-    client2 = "192.168.0.10",
+    localhost = "127.0.0.1",
     servoliv = "192.168.0.50",
     raspberry = "192.168.0.3"
 )
