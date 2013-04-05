@@ -6,6 +6,7 @@ Created on 4 avr. 2013
 @author: Quentin
 '''
 
+import sys
 import socket, json, time
 
 import core.errors
@@ -31,13 +32,19 @@ def send_to_client(host, port, call, params=None, timeout=1):
 
         sock.setblocking(0)
 
+        if call == "run":
+            sys.stdout.write("Test en cours sur '%s' " % host)
+
         while not done:
             try:
                 response = json.loads(sock.recv(1024))
                 done = True
             except socket.error:
-                print "no data received"
-                time.sleep(1)
+                if call == "run":
+                    sys.stdout.write(".")
+                    time.sleep(1)
+        if call == "run":
+            print
     except socket.timeout:
         raise core.errors.ClientTimeoutError("client '%s' timeout" % host)
     finally:
