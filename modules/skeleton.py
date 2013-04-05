@@ -5,7 +5,7 @@ import os
 
 def test(workdir="./", var=""):
     print("sketest")
-    return "sketest"
+    return True
 
 def run(workdir="./", var=""):
     fichier = open(workdir+"res", "w")

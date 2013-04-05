@@ -3,9 +3,8 @@
 
 import os
 
-# def test():
-#     print("test")
-#     return
+def test():
+    return True
 
 def run():
     print("firun")

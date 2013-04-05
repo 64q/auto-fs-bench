@@ -4,7 +4,7 @@
 import os
 
 def test(workdir="./", var=""):
-    return
+    return True
 
 def run(workdir="./", var=""):
     sortie=os.popen("du -sh "+var, "r").read()
