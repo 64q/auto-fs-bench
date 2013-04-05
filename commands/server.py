@@ -25,7 +25,7 @@ def test(host, port, test):
 
 def heartbeat(host, port):
     """Fonction permettant d'envoyer des msgs de type heartbeat"""
-    
+
     try:
         result = core.transmission.send_to_client(host, port, "heartbeat", timeout=0.1)
 

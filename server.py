@@ -46,7 +46,7 @@ class ServerArgumentParser(argparse.ArgumentParser):
         self.add_argument("-c", "--conf", default="app.cfg", dest="conf",
                           help="fichier config de l'application (default: app.cfg)")
         # port d'envoi du serveur aux clients
-        self.add_argument("-p", "--port", default=7979, type=int, dest="port", 
+        self.add_argument("-p", "--port", default=config.server.send_port, type=int, dest="port", 
                           help="port d'envoi du serveur (default: 7979)")
 
 

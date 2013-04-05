@@ -97,7 +97,7 @@ def main(argv=None):
     print __description__
     print "[+] Lancement du client en connexion sur serveur %s:%i" % (args.server_addr, __lport__)
     
-    client = ThreadedTCPServer(("127.0.0.1", __lport__), ClientHandler)
+    client = ThreadedTCPServer(("0.0.0.0", __lport__), ClientHandler)
     
     # lancement en mode demon
     if args.daemon:
