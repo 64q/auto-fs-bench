@@ -37,7 +37,7 @@ def send_to_client(host, port, call, params=None, timeout=1):
 
         while not done:
             try:
-                response = json.loads(sock.recv(1024))
+                response = json.loads(sock.recv(100000))
                 done = True
             except socket.error:
                 if call == "run":
