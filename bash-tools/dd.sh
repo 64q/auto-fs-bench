@@ -17,8 +17,6 @@
 # dd.sh 
 #
 
-[[ $# -lt 1 ]]  && usage
-
 WORKING_DIR=$PWD
 
 # PID du thread pour la création du fichier commun sur un client
@@ -67,6 +65,8 @@ usage() {
     echo "$0: <mount point>"
     exit 0
 }
+
+[[ $# -lt 1 ]]  && usage
 
 do_dd $1
 
