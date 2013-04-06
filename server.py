@@ -35,7 +35,7 @@ class ServerArgumentParser(argparse.ArgumentParser):
         
         # test à lancer
         self.add_argument('bench_test', nargs="?",
-                          help="test de benchmark a lancer (exemple: config.tests.example), optionnel si -c est renseigne")
+                          help="test de benchmark a lancer (exemple: simple), optionnel si -c est renseigne")
         # lancement en sous shell
         self.add_argument("-s", "--shell", action="store_true", dest="shell",
                           help="lance la ligne de commande en mode interactif, ignore l'argument bench_test")
@@ -203,6 +203,8 @@ def main():
     # mise a jour du port d'envoi
     config.server.send_port = args.port
     
+    print __description__
+
     # limitation verbosity a 3
     if args.verbose:
         if args.verbose > 3:
@@ -210,14 +212,20 @@ def main():
         
         print ">> Lancement en mode verbeux (niveau: %i)" % args.verbose
     
+    cmd = ServerCmd()
+
+    
+
     # lancement en mode interactif (CLI)
     if args.shell:
-        ServerCmd().cmdloop()
+        cmd.cmdloop()
     # lancement non interactif
     else:
         # renseignement du test à lancer
         if not args.bench_test is None:
             print ">> Lancement du test de benchmark '%s'" % args.bench_test
+
+            cmd.onecmd('run ' + args.bench_test)
         else:
             print "error: no benchmark test given"; return 1
             
