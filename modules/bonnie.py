@@ -1,14 +1,18 @@
 # -*- coding: utf-8 -*-
 """
-Module pour la gestion du test de benchmark : cp
+Module pour la gestion du test de benchmark : bonnie++
 
-Ce module utilise le script bash cp.sh
+Ce module utilise le script bash bonnie.sh
 """
 
 
 import os, subprocess
 
 def test(workdir="./", var=""):
+    toReturn = True
+    out = subprocess.Popen(["/bin/bash", "which", "bonnie++"], stdout=subprocess.PIPE).communicate()[0]
+    if out == "":
+        toReturn = False
     return True
 
 def run(workdir="./", var=""):
@@ -20,7 +24,7 @@ def run(workdir="./", var=""):
     #   chemin du script en dur
     #   passage des paramètres 'var'
     #   changement du dossier de travail
-    p = subprocess.Popen(["/bin/bash", pos+"/bash-tools/cp.sh", var], cwd=workdir, stdout=subprocess.PIPE)
+    p = subprocess.Popen(["/bin/bash", pos+"/bash-tools/bonnie.sh", var], cwd=workdir, stdout=subprocess.PIPE)
 
     # Récupérer la sortie du process
     out, err = p.communicate()

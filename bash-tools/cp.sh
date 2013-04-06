@@ -17,49 +17,48 @@
 # cp.sh 
 #
 
-# Dossier de travail
 WORKING_DIR=$PWD
-# PID du thread pour la création du fichier commun sur un client
-ROOT_FILENAME_TEST="file_$$"
+# PID process + timer to create uniq file on client
+ROOT_FILENAME_TEST="file_$$_`date +%s%N`"
 
 
 #$1 mountpoint
 do_cp()
 {
-    # Nom du fichier de sortie
-    FILE_LOG=${WORKING_DIR}/cp_${$}_`date "+%Y%m%d_%Hh%Mm%Ss"`_`basename $1`.log
+    # Ouput file name
+    FILE_LOG=${WORKING_DIR}/cp_`date "+%Y%m%d_%Hh%Mm%Ss"`_`basename $1`.log
     echo -e "size(MB)\t\tput(s)\tget(s)" > ${FILE_LOG}
 
-    #for count in 1 10 100 1000 10000; do # adaptation pour test perso
-    for count in 2 4 8 16 32 48 64 96 128 160; do
-        # nom du fichier de travail
+    #for count in 1 10 100 1000 10000; do
+    for count in 2 4 8 16 32 48 64 96 128 160; do # light test
+        # work file name
         FILENAME=${ROOT_FILENAME_TEST}_cp
 
-        # Création d'un fichier de 1Mo * x dans le dossier de travail
+        # Create a file of 1Mo * x in the workdir
         dd if=/dev/zero of=${WORKING_DIR}/${FILENAME} bs=$((1024*1024)) count=${count} >/dev/null 2>&1
 
-        # PREMIER TEST : TPUT(S)
-            # copie du fichier du dossier de travail vers le dossier monté
+        # FIRST TEST : TPUT(S)
+            # work dir to mount dir
             echo -ne "${count}" >> ${FILE_LOG}
             echo -ne "\t\t`/usr/bin/time -f "%E" cp $WORKING_DIR/$FILENAME /$1 2>&1 | tr -d '\n'`" >> ${FILE_LOG}
 
-            # Suppression du fichier du repertoire de travail
+            # delete file in the work dir
             rm -f $WORKING_DIR/$FILENAME
 
-        # Tratement entre les actions put et Get
+        # Tempo between put and Get action
         sleep 1
         # Conflit pour l'exécution parallèle
         #sleep 3;umount ${1};sleep 3;mount ${1};sleep 3;
 
-        # DEUXIEME TEST : TGET(S)
+        # SECOND TEST : TGET(S)
             echo -e "\t`/usr/bin/time -f "%E" cp $1/$FILENAME $WORKING_DIR/$FILENAME 2>&1 | tr -d '\n'`" >> ${FILE_LOG}
 
-            # Suppression des fichiers
+            # delete files
             rm -f $1/$FILENAME
             rm -f $WORKING_DIR/$FILENAME
     done;
 
-    # Traitement des résultats
+    # results treatment
     mv ${FILE_LOG} "${FILE_LOG}.csv"
 }
 

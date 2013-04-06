@@ -17,56 +17,55 @@
 # dd.sh 
 #
 
-# Dossier de travail
 WORKING_DIR=$PWD
-# PID du thread pour la création du fichier commun sur un client
-ROOT_FILENAME_TEST="file_$$_"
+# PID process + timer to create uniq file on client
+ROOT_FILENAME_TEST="file_$$_`date +%s%N`"
 
 #$1 mountpoint
 do_dd()
 {
-    # Nom du fichier de sortie
-    FILE_LOG=${WORKING_DIR}/dd_${$}_`date "+%Y%m%d_%Hh%Mm%Ss"`_`basename $1`.log
+    # Ouput file name
+    FILE_LOG=${WORKING_DIR}/dd_`date "+%Y%m%d_%Hh%Mm%Ss"`_`basename $1`.log
     echo -e "size\tcount\tbs\twrite(s)\twrite(MB.s)\tread(s)\tread(MB.s)" >> ${FILE_LOG}
 
-    # Lancement du test
+    # Start Test
     #for bs in 4096 8192 16384; do
-    for bs in 4096 8192; do
+    for bs in 4096 8192; do # light test
         #10Mo, 100Mo, 1Go, 10Go
         #10485760 104857600 1073741824 10737418240
         #for size in 10485760 104857600 1073741824 10737418240 ; do
-        for size in 40960 81920 163840 327680 ; do
+        for size in 40960 81920 163840 327680 ; do # light test
 
-            # Nombre de bocks
+            # Number of blocks
             let count=${size}/${bs}
 
-            # Nom du fichier pour effectuer les tests
+            # Test file name
             FILENAME=${ROOT_FILENAME_TEST}_${size}_${count}_${bs}
 
-            # Calcul de l'écriture du fichier du local vers le point de montage
+            # local to mount dir
                 echo -ne "${size}\t${count}\t${bs}" >> ${FILE_LOG}
                 result=`dd conv=fdatasync if=/dev/zero of=$1/${FILENAME} bs=${bs} count=${count} 2>&1 | tail -n +3 | tr -s ' '`
                 time=`echo $result | cut -d ' ' -f 6`
                 rate=`echo $result | cut -d ' ' -f 8`
                 echo -ne "\t$time\t$rate" >> ${FILE_LOG}
 
-            # Tratement entre les actions put et Get
+            # Tempo between put and Get action
             sleep 1
             # Conflit pour l'exécution parallèle
             #sleep 3;umount ${1};sleep 3;mount ${1};sleep 3;
 
-            # Calcul de l'écriture du fichier du point de montage vers le local
+            # mount dir to local
                 result=`dd conv=fdatasync of=/dev/null if=${1}/${FILENAME} bs=${bs} count=${count} 2>&1 | tail -n +4 | tr -s ' '`
                 time=`echo $result | cut -d ' ' -f 6`
                 rate=`echo $result | cut -d ' ' -f 8`
                 echo -e "\t$time\t$rate" >> ${FILE_LOG}
 
-            # Suppression du fichier créé
+            # delete created files
             rm -f ${1}/${FILENAME} 2>&1
         done;
     done;
 
-    # Traitement des résultats
+    # results treatment
     #sed -i 's/\,/\./g' ${FILE_LOG}
     mv ${FILE_LOG} "${FILE_LOG}.csv"
 }

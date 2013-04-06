@@ -17,11 +17,11 @@ name = "olivier"
 comment = "bash scripts test"
 
 # modules de test à lancer
-modules = ["dd"]
+modules = ["dd", "cp"]
 
 # liste des clients cibles du test
 clients = {
-    "servoliv": {"path": "/srv", "times": 4}
+    "servoliv": {"path": "/srv", "times": 1}
 }
 
 # spécifications sur le système de fichier testé

@@ -13,8 +13,8 @@
 #  along with this program.  If not, see
 #  <http://www.gnu.org/licenses/>.
 
-. env.sh
-
+WORKING_DIR=$PWD
+BONNIE_BINARY=`which bonnie++`
 
 usage() {
 	echo "$0: <mount point>"
@@ -26,7 +26,8 @@ usage() {
 [[ -z ${BONNIE_BINARY} ]] && echo "Can't find bonnie++." && exit -1
 
 flog=${WORKING_DIR}/bonnie++_`date "+%Y%m%d_%Hh%Mm%Ss"`_`basename $1`.log
-#${BONNIE_BINARY} -d $1 -n 200 -m testedhost -s 16384 -f -u nobody 2>&1 | tee $flog
-${BONNIE_BINARY} -d $1 -n 5 -s 16384 -f -u nobody 2>&1 | tee $flog
+# ${BONNIE_BINARY} -d $1 -n 200 -m testedhost -s 16384 -f -u nobody 2>&1 | tee $flog
+# ${BONNIE_BINARY} -d $1 -n 5 -s 16384 -f -u root 2>&1 | tee $flog
+${BONNIE_BINARY} -d $1 -n 1 -s 4384 -f -u root -q >> $flog
 
 exit 0
