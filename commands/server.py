@@ -51,7 +51,7 @@ def run(host, port, conf=dict()):
     response = dict()
 
     try:
-        response = core.transmission.send_to_client(host, port, "run", params=conf)
+        response = core.transmission.send_to_client(host, port, "run", params=conf, blocking=0)
     except core.errors.ClientTimeoutError as e:
         response = __error__(e.__str__())
 

@@ -12,7 +12,7 @@ import sys, os
 import argparse, cmd
 import csv
 
-import core.manager, core.tests
+import core.utils, core.manager, core.tests
 import commands.server
 import config.server
 
@@ -74,7 +74,7 @@ class ServerCmd(cmd.Cmd):
                 server_config = core.manager.build_server_config(test)
                 clients_results = dict()
                 threads = list()
-                
+
                 for client in server_config.clients:
                     # configuration du client à envoyer
                     client_config = core.manager.build_client_config(server_config, client)
@@ -87,9 +87,19 @@ class ServerCmd(cmd.Cmd):
                     # ajout dans la liste des threads
                     threads.append(thread)
                 
-                # on attend que tous les threads se terminent pour continuer    
+                # lancement loading bar dans un thread dédié
+                loading_thread = core.utils.LoadingBarThread()
+                loading_thread.start()
+
+                # on attend que tous les threads se terminent pour continuer
                 core.utils.threads_join_all(threads)
                 
+                # on stoppe aussi la loading bar
+                loading_thread.stop()
+                loading_thread.join()
+
+                print "Fin du test de benchmark"
+
                 # lecture de chaque client et de ses résultats de thread
                 for client, result in clients_results.iteritems():
                     try:

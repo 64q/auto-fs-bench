@@ -6,11 +6,13 @@ Created on 4 avr. 2013
 @author: Quentin
 """
 
-import socket, json, csv, time
+import sys, socket, json, csv, time
 import threading, importlib
 
+import server
 
-def threads_create_and_start(fn, params):
+
+def threads_create_and_start(fn, params=()):
     thread = threading.Thread(target=fn, args=params)
     thread.start()
 
@@ -67,3 +69,20 @@ def load_config_test(test):
     """Charge la configuration pour un test"""
     
     return importlib.import_module('config.tests.' + test)
+
+
+class LoadingBarThread(threading.Thread):
+    def __init__(self, nom = ''):
+        threading.Thread.__init__(self)
+        self.nom = nom
+        self.Terminated = False
+    def run(self):
+        while not self.Terminated:
+            time.sleep(0.5) # do real work here
+            # update the bar
+            sys.stdout.write(".")
+            sys.stdout.flush()
+
+        sys.stdout.write("\n")
+    def stop(self):
+        self.Terminated = True

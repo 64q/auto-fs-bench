@@ -12,7 +12,7 @@ import socket, json, time
 import core.errors
 
 
-def send_to_client(host, port, call, params=None, timeout=1):
+def send_to_client(host, port, call, params=None, timeout=1, blocking=1):
     """Fonction générique pour faire un appel distant"""
     
     # requête envoyée au client
@@ -30,19 +30,22 @@ def send_to_client(host, port, call, params=None, timeout=1):
         sock.connect((host, port))
         sock.sendall(json.dumps(request) + "\n")
 
-        sock.setblocking(0)
+        sock.setblocking(blocking)
 
-        while not done:
-            try:
-                response = json.loads(sock.recv(65536)) # FIXME
-                done = True
-            except socket.error:
-                time.sleep(1)
+        if blocking == 0:
+            while not done:
+                try:
+                    response = json.loads(sock.recv(65536)) # FIXME
+                    done = True # stop la boucle infinie, car données reçues
+                except socket.error:
+                    time.sleep(1)
+        else:
+            response = json.loads(sock.recv(65536)) # FIXME
     except socket.timeout:
         raise core.errors.ClientTimeoutError("client '%s' timeout" % host)
     finally:
         sock.close()
-        
+    
     return response
 
 def retreive_response():
