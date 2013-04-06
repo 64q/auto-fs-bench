@@ -13,9 +13,9 @@
 #  along with this program.  If not, see
 #  <http://www.gnu.org/licenses/>.
 
-. env.sh
+WORKING_DIR=$PWD
+IOZONE_BINARY=`which iozone`
 
-	
 usage() {
 	echo "$0: <mount point>"
 	exit 0
@@ -38,7 +38,12 @@ usage() {
 
 ftest=$1/$$.dat
 flog=${WORKING_DIR}/iozone_`date "+%Y%m%d_%Hh%Mm%Ss"`_`basename $1`.log
-${IOZONE_BINARY} -ac $1 -f $ftest | tee $flog
-#${IOZONE_BINARY} -ac -f $ftest 2>&1 | tee $flog
+
+
+# ${IOZONE_BINARY} -ac $1 -f $ftest | tee $flog
+# ${IOZONE_BINARY} -ac -f $ftest 2>&1 | tee $flog
+${IOZONE_BINARY} -ac $1 -g 4049 -f $ftest -b ${flog}.xls
+
+
 
 exit 0
