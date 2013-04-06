@@ -8,49 +8,60 @@ Created on 27 févr. 2013
 
 import json
 
+import core.errors
 import bench
 
 
 def error(reason="Generic error"):
     """Fonction permettant de notifier une erreur au serveur"""
     
-    return json.dumps({"command": "error", "returnValue": reason})
+    response = dict(command = "error", returnValue = reason)
+
+    return response
 
 
 def test(params):
-    """ TODO TODO TODO Fonction permettant de tester si le client est correctement initialisé"""
+    """ Fonction permettant de tester si le client est correctement initialisé"""
     
-    mods = bench.modLoad(params["modules"])
-    valid = True
+    response = dict(command = "test", returnValue = True)
 
-    for k in params["modules"]:
-        module = mods[k]
-        
-        if module is None or not module.test():
-            valid = False
-            
-        
-    return json.dumps({"command": "test", "returnValue": valid})
+    try:
+        # chargement des modules nécessaires au test
+        modules = bench.modLoad(params["modules"])
+
+        # test de chacun des modules
+        for modname, modfns in modules.iteritems():
+            modfns.test()
+    except core.errors.InvalidModuleError as e:
+        response = error(e.__str__())
+
+    return response
 
 
-def heartbeat():
+def heartbeat(params=None):
     """Réponse à un heartbeat"""
     
-    return json.dumps({"command": "heartbeat", "returnValue": True})
+    response = dict(command = "heartbeat", returnValue = True)
+
+    return response
 
 
 def run(params):
     """Fonction pour effectuer un test de benchmark"""
     
-    output = dict()
-    mods = bench.modLoad(params["modules"])
-    
-    for k in params["modules"]:
-        module = mods[k]
-        
-        if module is None:
-            return error()
-        else:
-            output[k] = bench.modLaunch(module, "run", params["path"], nb=params["times"])
-    
-    return json.dumps({"command": "run", "returnValue": output})
+    results = dict()
+    response = dict(command = "test", returnValue = None)
+
+    try:
+        mods = bench.modLoad(params["modules"])
+
+        for k in params["modules"]:
+            module = mods[k]
+
+            results[k] = bench.modLaunch(module, "run", params["path"], nb=params["times"])
+
+        response["returnValue"] = results
+    except core.errors.InvalidModuleError as e:
+        response = error(e.__str__())
+
+    return response

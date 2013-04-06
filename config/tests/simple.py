@@ -21,7 +21,7 @@ modules = ["du"]
 
 # liste des clients cibles du test
 clients = {
-    "localhost": {"path": "./", "times": 5}
+    "localhost": {"path": "./", "times": 3}
 }
 
 # spécifications sur le système de fichier testé

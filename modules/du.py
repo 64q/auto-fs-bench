@@ -3,6 +3,8 @@
 
 import os
 
+import core.errors
+
 def test(workdir="./", var=""):
     return True
 

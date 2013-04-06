@@ -15,6 +15,9 @@ class CmdError(Exception):
         self.expr = expr
         self.msg = msg
 
+    def __str__(self):
+        return self.msg
+
 
 class ClientTimeoutError(Exception):
     """
@@ -24,6 +27,9 @@ class ClientTimeoutError(Exception):
     def __init__(self, msg):
         self.msg = msg
 
+    def __str__(self):
+        return self.msg
+
 
 class ClientTransmissionError(Exception):
     """
@@ -32,3 +38,18 @@ class ClientTransmissionError(Exception):
 
     def __init__(self, msg):
         self.msg = msg
+
+    def __str__(self):
+        return self.msg
+
+
+class InvalidModuleError(Exception):
+    """
+    Exception lancée lorsque le module est invalide
+    """
+
+    def __init__(self, msg):
+        self.msg = msg
+
+    def __str__(self):
+        return self.msg

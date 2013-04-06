@@ -9,32 +9,52 @@ Created on 27 févr. 2013
 import core.transmission, core.utils, core.errors
 
 
-def test(host, port, test):
+def __error__(reason="Generic Reason"):
+    """
+    Fonction pour renvoyer une erreur
+    """
+
+    response = dict(command = "error", returnValue = reason)
+
+    return response
+
+
+def test(host, port, test=None):
     """Fonction permettant de vérifier que le test est valide sur le client"""
     
     config = core.utils.load_config_test(test)
     modules = config.modules
+    response = dict()
 
     try:
-        result = core.transmission.send_to_client(host, port, "test", params={"modules": modules})
+        response = core.transmission.send_to_client(host, port, "test", params={"modules": modules})
+    except core.errors.ClientTimeoutError as e:
+        response = __error__(e.__str__())
 
-        return result["returnValue"]
-    except core.errors.ClientTimeoutError:
-        return False
+    return response
 
 
 def heartbeat(host, port):
     """Fonction permettant d'envoyer des msgs de type heartbeat"""
 
+    response = dict()
+
     try:
-        result = core.transmission.send_to_client(host, port, "heartbeat", timeout=0.1)
+        response = core.transmission.send_to_client(host, port, "heartbeat", timeout=0.1)
+    except core.errors.ClientTimeoutError as e:
+        response = __error__(e.__str__())
 
-        return result["returnValue"]
-    except core.errors.ClientTimeoutError:
-        return False
+    return response
 
 
-def run(host, port, conf):
+def run(host, port, conf=dict()):
     """Fonction permettant d'exécuter un test de benchmark"""
     
-    return core.transmission.send_to_client(host, port, "run", params=conf)
+    response = dict()
+
+    try:
+        response = core.transmission.send_to_client(host, port, "run", params=conf)
+    except core.errors.ClientTimeoutError as e:
+        response = __error__(e.__str__())
+
+    return response

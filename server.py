@@ -96,6 +96,8 @@ class ServerCmd(cmd.Cmd):
                         # on vérifie que le résultat n'est pas une erreur
                         core.transmission.check_transmission(result)
 
+                        print "  %s\t: resultat du test OK" % client
+
                         # on boucle sur tous les threads du client récupéré
                         for modname, threads_results in result["returnValue"].iteritems():
                             # génération des chemins de sauvegarde
@@ -104,8 +106,8 @@ class ServerCmd(cmd.Cmd):
 
                             # sauvegarde des différents ichiers
                             core.tests.save_files(moduledir, filename, client, threads_results)
-                    except:
-                        print "error: client '%s' has error transmission" % client
+                    except Exception as e:
+                        print "  %s\t: erreur de transmission (error: %s)" % (client, e)
             except ImportError as e:
                 print "error: %s" % e
         else:
@@ -122,12 +124,15 @@ class ServerCmd(cmd.Cmd):
 
             try:
                 for client, ip in config.server.clients.iteritems():
-                    if commands.server.test(ip, config.server.send_port, test):
-                        print "  %s: %s" % (client, "Operationnel")
+                    # execution de la fonction de test sur chacun des client cible du test
+                    response = commands.server.test(ip, config.server.send_port, test)
+
+                    if response["command"] == "test":
+                        print "  %s\t: %s" % (client, "test operationnel")
                     else:
-                        print "  %s: %s" % (client, "En erreur")
+                        print "  %s\t: %s" % (client, "erreur lors du test (error: %s)" % response["returnValue"])
             except ImportError as e:
-                print "error: %s" % e    
+                print "error: %s" % e
         else:
             print "error: no test given"
     
@@ -139,16 +144,18 @@ class ServerCmd(cmd.Cmd):
         
         # listage des clients 
         if line == "clients":
-            print "Test de heartbeat des clients"
+            print "Liste des clients"
 
             for client, ip in config.server.clients.iteritems():
                 result = commands.server.heartbeat(ip, config.server.send_port)
                 
-                if result:
-                    print "  %s: %s" % (client, "Online")
+                if result["command"] == "heartbeat":
+                    print "  %s\t: %s" % (client, "Online")
                 else:
-                    print "  %s: %s" % (client, "Offline")
-
+                    print "  %s\t: %s" % (client, "Offline (error: %s)" % result["returnValue"])
+        # listage des tests disponibles
+        elif line == "tests":
+            print "Liste des tests de benchmark"
         # type de listage inconnu
         else:
             print "error: unrecognized type of listing"

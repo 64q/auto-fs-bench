@@ -18,7 +18,7 @@ def send_to_client(host, port, call, params=None, timeout=1):
     # requête envoyée au client
     request = {"command": call, "params": params}
     # réponse préfabriquée override si le client répond
-    response = {"command": call, "params": params, "returnValue": False}
+    response = {"command": call, "params": params, "returnValue": None}
 
     # Création de la socket en mode TCP
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -32,19 +32,12 @@ def send_to_client(host, port, call, params=None, timeout=1):
 
         sock.setblocking(0)
 
-        if call == "run":
-            sys.stdout.write("Test en cours sur '%s' " % host)
-
         while not done:
             try:
-                response = json.loads(sock.recv(100000))
+                response = json.loads(sock.recv(65536)) # FIXME
                 done = True
             except socket.error:
-                if call == "run":
-                    sys.stdout.write(".")
-                    time.sleep(1)
-        if call == "run":
-            print
+                time.sleep(1)
     except socket.timeout:
         raise core.errors.ClientTimeoutError("client '%s' timeout" % host)
     finally:
@@ -57,7 +50,7 @@ def retreive_response():
     
 def check_transmission(rq):
     if rq["command"] == "error":
-        raise ClientTransmissionError(rq["returnValue"])
+        raise core.errors.ClientTransmissionError(rq["returnValue"])
     else:
         return True
             

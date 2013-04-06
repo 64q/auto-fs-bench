@@ -18,9 +18,9 @@ def save_files(moduledir, filename, client, threads_results):
         for thread_id, thread_content in threads_results.iteritems():
             # écriture de la ligne de résultat 'return'
             core.utils.csv_write_line(csvfile, 
-                [client + "_" + thread_id, thread_content["return"]])
+                [client + "_" + thread_id + "_" + thread_id, thread_content["return"]])
 
             # création des fichiers de sortie du module de benchmark
             for fn, ct in thread_content["files"].iteritems():
-                with open(moduledir + "/" + fn, "w") as fp:
+                with open(moduledir + "/" + client + "_" + thread_id + "_" + fn, "w") as fp:
                     fp.write(ct)

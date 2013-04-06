@@ -8,13 +8,15 @@ A appeller avec `python server.py [options] server_addr'
 @author: Quentin
 """
 
-import sys, signal
-import json, argparse
+import sys
+import json
+import argparse
 import threading
 
 import SocketServer
 
-import config.client, commands.client
+import config.client
+import commands.client
 
 
 # configuration client
@@ -36,13 +38,13 @@ class ClientArgumentParser(argparse.ArgumentParser):
         
         # lancement en mode deamon
         self.add_argument("-d", "--daemon", action="store_true", dest="daemon", 
-                          help="lancement en demon")
+            help="lancement en demon")
         # lancement en mode verbeux
         self.add_argument("-v", "--verbose", action="count", dest="verbose", 
-                          help="parametrage de la verbosite")
+            help="parametrage de la verbosite")
         # port d'écoute du client
         self.add_argument("-p", "--port", dest="port", default=config.client.listen_port, type=int, 
-                          help="port d'ecoute du client (default: 7979)")
+            help="port d'ecoute du client (default: 7979)")
 
 
 class ClientHandler(SocketServer.StreamRequestHandler):
@@ -58,22 +60,14 @@ class ClientHandler(SocketServer.StreamRequestHandler):
 
         # traitement des commandes recues
         
-        # heartbeat
-        if request["command"] == "heartbeat":
-            response = commands.client.heartbeat()
-        # run
-        elif request["command"] == "run":
-            response = commands.client.run(request["params"])
-        # test
-        elif request["command"] == "test":
-            response = commands.client.test(request["params"])
-        # commande inconnue
-        else:
-            response = commands.client.error("Unknown command")
-        
+        try:
+            response = getattr(commands.client, request["command"])(request["params"])
+        except Exception as e:
+            response = commands.client.error("%s" % e)
+
         print "Sent back response >> %s" % response
         
-        self.request.sendall(response)
+        self.request.sendall(json.dumps(response))
 
 
 class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
