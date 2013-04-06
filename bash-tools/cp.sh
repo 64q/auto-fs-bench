@@ -17,27 +17,35 @@
 # cp.sh 
 #
 
-. env.sh
-
-ROOT_FILENAME_TEST=file_test
+WORKING_DIR=$PWD
+# PID du thread pour la création du fichier commun sur un client
+ROOT_FILENAME_TEST="file_$$_"
 
 #$1 mountpoint
 do_cp()
 {
     FILE_LOG=${WORKING_DIR}/cp_`date "+%Y%m%d_%Hh%Mm%Ss"`_`basename $1`.log
-	echo -e "size(KB)\t\tput(s)\tget(s)" > ${FILE_LOG}
-	for count in 1000 10000 100000 1000000 10000000; do
-		FILENAME=file_test
-		dd if=/dev/zero of=${FILENAME} bs=1024 count=${count} >/dev/null 2>&1
+	echo -e "size(MB)\t\tput(s)\tget(s)" > ${FILE_LOG}
+	#for count in 1000 10000 100000 1000000 10000000; do # old
+	#for count in 1 10 100 1000 10000; do # adaptation pour test perso
+	for count in 1 10 100 1000; do
+		FILENAME=${ROOT_FILENAME_TEST}_cp
+		dd if=/dev/zero of=${FILENAME} bs=$((1024*1024)) count=${count} >/dev/null 2>&1
 
 		echo -ne "${count}" >> ${FILE_LOG}
 		echo -ne "\t\t`/usr/bin/time -f "%E" cp $FILENAME /$1 2>&1 | tr -d '\n'`" >> ${FILE_LOG}
 		rm -f ${FILENAME}
-		sleep 3;umount ${1};sleep 3;mount ${1};sleep 3;
+
+		# Conflit pour l'exécution parallèle
+		#sleep 3;umount ${1};sleep 3;mount ${1};sleep 3;
+
 		echo -e "\t`/usr/bin/time -f "%E" cp $1/$FILENAME . 2>&1 | tr -d '\n'`" >> ${FILE_LOG}
 		rm -f ${1}/${FILENAME}
 	done;
 
+	# Traitement des résultats
+    sed -i 's/\,/\./g' ${FILE_LOG}
+    mv ${FILE_LOG} "${FILE_LOG}.csv"
 }
 
 usage() {
