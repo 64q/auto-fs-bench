@@ -7,13 +7,18 @@ Ce module utilise le script bash bonnie.sh
 
 
 import os, subprocess
+import core.errors
 
 def test(workdir="./", var=""):
-    toReturn = True
-    out = subprocess.Popen(["/bin/bash", "which", "bonnie++"], stdout=subprocess.PIPE).communicate()[0]
-    if out == "":
-        toReturn = False
-    return True
+    valid = True
+    text = ""
+    if subprocess.Popen(["which", "bonnie++"], stdout=subprocess.PIPE).communicate()[0] == "":
+        text += " - bonnie++ missing"
+        valid = False
+
+    if not valid:
+        raise core.errors.InvalidModuleError(text)
+    return valid
 
 def run(workdir="./", var=""):
     # Récupérer le dossier de travail courant
@@ -39,5 +44,6 @@ def graph(workdir="./", var=""):
     return ""
 
 if __name__ == "__main__":
-    run("/tmp", "/srv")
+    # run("/tmp", "/srv")
+    print test()
     os.system("pause")

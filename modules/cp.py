@@ -7,9 +7,21 @@ Ce module utilise le script bash cp.sh
 
 
 import os, subprocess
+import core.errors
 
 def test(workdir="./", var=""):
-    return True
+    valid = True
+    text = ""
+    if subprocess.Popen(["which", "time"], stdout=subprocess.PIPE).communicate()[0] == "":
+        text += " - /usr/bin/time missing"
+        valid = False
+    if subprocess.Popen(["which", "dd"], stdout=subprocess.PIPE).communicate()[0] == "":
+        text += " - /bin/dd missing"
+        valid = False
+
+    if not valid:
+        raise core.errors.InvalidModuleError(text)
+    return valid
 
 def run(workdir="./", var=""):
     # Récupérer le dossier de travail courant
@@ -35,5 +47,6 @@ def graph(workdir="./", var=""):
     return ""
 
 if __name__ == "__main__":
-    run("/tmp", "/srv")
+    # run("/tmp", "/srv")
+    print test()
     os.system("pause")
