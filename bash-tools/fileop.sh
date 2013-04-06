@@ -13,7 +13,9 @@
 #  along with this program.  If not, see
 #  <http://www.gnu.org/licenses/>.
 
-. env.sh
+
+WORKING_DIR=$PWD
+FSOP_BINARY=`which fileop`
 	
 usage() {
 	echo "$0: <mount point>"

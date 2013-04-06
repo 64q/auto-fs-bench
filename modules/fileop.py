@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Module pour la gestion du test de benchmark : bonnie++
+Module pour la gestion du test de benchmark : fileop
 
-Ce module utilise le script bash bonnie.sh
+Ce module utilise le script bash fileop.sh
 """
 
 
@@ -12,8 +12,8 @@ import core.errors
 def test(workdir="./", var=""):
     valid = True
     text = ""
-    if subprocess.Popen(["which", "bonnie++"], stdout=subprocess.PIPE).communicate()[0] == "":
-        text += " - bonnie++ missing"
+    if subprocess.Popen(["which", "fileop"], stdout=subprocess.PIPE).communicate()[0] == "":
+        text += " - fileop missing"
         valid = False
 
     if not valid:
@@ -29,7 +29,7 @@ def run(workdir="./", var=""):
     #   chemin du script en dur
     #   passage des paramètres 'var'
     #   changement du dossier de travail
-    p = subprocess.Popen(["/bin/bash", pos+"/bash-tools/bonnie.sh", var], cwd=workdir, stdout=subprocess.PIPE)
+    p = subprocess.Popen(["/bin/bash", pos+"/bash-tools/fileop.sh", var], cwd=workdir, stdout=subprocess.PIPE)
 
     # Récupérer la sortie du process
     out, err = p.communicate()

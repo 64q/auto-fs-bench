@@ -37,7 +37,6 @@ def run(workdir="./", var=""):
     # Récupérer la sortie du process
     out, err = p.communicate()
     
-    # sortie=os.popen("bash-tools/dd.sh "+workdir+" "+var, "r").read()
     return out
 
 def format(workdir="./", var=""):
