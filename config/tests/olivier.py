@@ -21,7 +21,7 @@ modules = ["dd"]
 
 # liste des clients cibles du test
 clients = {
-    "servoliv": {"path": "/srv", "times": 1}
+    "servoliv": {"path": "/srv", "times": 4}
 }
 
 # spécifications sur le système de fichier testé
