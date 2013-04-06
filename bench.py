@@ -5,6 +5,8 @@ import os
 import threading
 import time
 
+import core.errors
+
 def modLoad(liste = None):
     """Chargement des modules"""
     # Init
@@ -34,9 +36,11 @@ def modLoad(liste = None):
                 mod[name] = val
             else :
                 print '   erreur de fonction dans le module ', name
+                raise InvalidModuleError("Invalid module (function error)")
 
         except:
             print '   [except] erreur de langage dans le module ', name
+            raise core.errors.InvalidModuleError("Invalid module (language error)")
     return mod
 
 def modCheck(mod):
