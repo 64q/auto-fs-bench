@@ -12,14 +12,14 @@ import sys, os
 import argparse, cmd
 import csv
 
-import core.manager
+import core.manager, core.tests
 import commands.server
 import config.server
 
 # definition des variables de description
 __program__ = "auto-fs-bench"
 __version__ = "0.1 (dev)"
-__description__ = "auto-fs-bench executable"
+__description__ = "auto-fs-bench server executable"
 
 
 class ServerArgumentParser(argparse.ArgumentParser):
@@ -67,6 +67,8 @@ class ServerCmd(cmd.Cmd):
         """Fonction pour lancer un benchmark sur la plateforme"""
         
         if test:
+            print "Test de benchmark '%s'" % test
+
             try:
                 # build de la configuration serveur
                 server_config = core.manager.build_server_config(test)
@@ -84,31 +86,26 @@ class ServerCmd(cmd.Cmd):
 
                     # ajout dans la liste des threads
                     threads.append(thread)
-                    
+                
+                # on attend que tous les threads se terminent pour continuer    
                 core.utils.threads_join_all(threads)
                 
-                # lecture des résultats obtenus et stockage
-                # écriture des résultats de chacun des clients
+                # lecture de chaque client et de ses résultats de thread
                 for client, result in clients_results.iteritems():
-                    # core.transmission.check_transmission(result)
+                    try:
+                        # on vérifie que le résultat n'est pas une erreur
+                        core.transmission.check_transmission(result)
 
-                    for modname, threads_results in result["returnValue"].iteritems():
-                        # ouverture en mode append du fichier
-                        moduledir = core.manager.generate_moduledir(server_config, modname)
-                        filename = core.manager.generate_filename(server_config, modname)
-                        csvfile = open(filename, "ab")
+                        # on boucle sur tous les threads du client récupéré
+                        for modname, threads_results in result["returnValue"].iteritems():
+                            # génération des chemins de sauvegarde
+                            moduledir = core.manager.generate_moduledir(server_config, modname)
+                            filename = core.manager.generate_filename(server_config, modname)
 
-                        for thread_id, thread_content in threads_results.iteritems():
-                            # écriture de la ligne de résultat 'return'
-                            core.utils.csv_write_line(csvfile, [client + "_" + thread_id, thread_content["return"]])
-
-                            # création des fichiers de sortie du module de benchmark
-                            for fn, ct in thread_content["files"].iteritems():
-                                fp = open(moduledir + "/" + fn, "w")
-                                fp.write(ct)
-                                fp.close()
-
-                        csvfile.close()
+                            # sauvegarde des différents ichiers
+                            core.tests.save_files(moduledir, filename, client, threads_results)
+                    except:
+                        print "error: client '%s' has error transmission" % client
             except ImportError as e:
                 print "error: %s" % e
         else:
@@ -123,13 +120,14 @@ class ServerCmd(cmd.Cmd):
         if test:
             print "Test de configuration du test '%s'" % test
 
-            for client, ip in config.server.clients.iteritems():
-                result = commands.server.test(ip, config.server.send_port, test)
-                
-                if result:
-                    print "%s: %s" % (client, "Operationnel")
-                else:
-                    print "%s: %s" % (client, "En erreur")
+            try:
+                for client, ip in config.server.clients.iteritems():
+                    if commands.server.test(ip, config.server.send_port, test):
+                        print "  %s: %s" % (client, "Operationnel")
+                    else:
+                        print "  %s: %s" % (client, "En erreur")
+            except ImportError as e:
+                print "error: %s" % e    
         else:
             print "error: no test given"
     
@@ -203,7 +201,7 @@ def main():
         if args.verbose > 3:
             args.verbose = 3
         
-        print "[+] Lancement en mode verbeux (niveau: %i)" % args.verbose
+        print ">> Lancement en mode verbeux (niveau: %i)" % args.verbose
     
     # lancement en mode interactif (CLI)
     if args.shell:
@@ -212,7 +210,7 @@ def main():
     else:
         # renseignement du test à lancer
         if not args.bench_test is None:
-            print "[+] Lancement du test de benchmark '%s'" % args.bench_test
+            print ">> Lancement du test de benchmark '%s'" % args.bench_test
         else:
             print "error: no benchmark test given"; return 1
             
