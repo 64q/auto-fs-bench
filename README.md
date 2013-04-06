@@ -63,6 +63,13 @@ Il suffit donc de recopier ce squelette et de lancer ensuite la nouvelle configu
 Le serveur de tests permet de contrôler les clients lancés et de lancer des tests de benchmarks. Les résultats sont
 ensuite directement rapatriés sur le serveurs et stockés dans une arborescence logique.
 
+### Différents types de lancement
+
+Vous pouvez lancer le serveur en mode interactif avec un sous-shell ou lancer directement un test.
+
+* Pour lancer en mode interactif, entrez `python server.py -s`
+* Pour lancer le test `test` directement, entrez `python server.py test`
+
 ### Liste des commandes du shell serveur
 
 * `list clients` permet de lister les clients lancés sur la plateforme
