@@ -19,11 +19,9 @@ def __error__(reason="Generic Reason"):
     return response
 
 
-def test(host, port, test=None):
+def test(host, port, modules=[]):
     """Fonction permettant de vérifier que le test est valide sur le client"""
     
-    config = core.utils.load_config_test(test)
-    modules = config.modules
     response = dict()
 
     try:

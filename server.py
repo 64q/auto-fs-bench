@@ -122,10 +122,12 @@ class ServerCmd(cmd.Cmd):
         if test:
             print "Test de configuration du test '%s'" % test
 
+            server_config = core.manager.build_server_config(test)
+
             try:
-                for client, ip in config.server.clients.iteritems():
+                for client in server_config.clients:
                     # execution de la fonction de test sur chacun des client cible du test
-                    response = commands.server.test(ip, config.server.send_port, test)
+                    response = commands.server.test(config.server.clients[client], config.server.send_port, server_config.modules)
 
                     if response["command"] == "test":
                         print "  %s\t: %s" % (client, "test operationnel")
