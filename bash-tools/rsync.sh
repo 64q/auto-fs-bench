@@ -15,10 +15,18 @@
 
 WORKING_DIR=$PWD
 
-	
+
+# binaries
+RSYNC_BINARY=`which rsync`
+FDTREE_BINARY=`which fdtree.bash`
+# if fdtree is in the PATH 
+if [ -z "$FDTREE_BINARY" ]; then 
+    FDTREE_BINARY=`which ./fdtree.bash`
+fi
+
 usage() {
-	echo "$0: <mount point>"
-	exit 0
+    echo "$0: <mount point>"
+    exit 0
 }
 
 [[ $# -lt 1 ]] && usage
