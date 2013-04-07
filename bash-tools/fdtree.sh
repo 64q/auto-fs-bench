@@ -21,12 +21,11 @@ WORKING_DIR=$PWD
 
 # binaries
 # if fdtree is in the PATH 
-if ! [ -z `which fdtree.bash` ]; then 
-	FDTREE_BINARY=fdtree.bash
-else
-	FDTREE_BINARY=./fdtree.bash
+FDTREE_BINARY=`which fdtree.bash`
+# if fdtree is in the PATH 
+if [ -z "$FDTREE_BINARY" ]; then 
+    FDTREE_BINARY=`which ./fdtree.bash`
 fi
-
 
 #$1 mount point
 #$2 levels
@@ -35,13 +34,13 @@ fi
 #$5 file size (in blocks 8k for rozofs)
 #$6 file log
 fdtree() {
-	flog=${WORKING_DIR}/fdtree_`date "+%Y%m%d_%Hh%Mm%Ss"`_`basename $1`_$2_$3_$4_$5.log
-	${FDTREE_BINARY} -l $2 -d $3 -f $4 -s $5 -o $1 2>&1 | tee -a $flog
+    flog=${WORKING_DIR}/fdtree_`date "+%Y%m%d_%Hh%Mm%Ss"`_`basename $1`_$2_$3_$4_$5.log
+    ${FDTREE_BINARY} -l $2 -d $3 -f $4 -s $5 -o $1 2>&1 | tee -a $flog
 }
 
 usage() {
-	echo "$0: <mount point>"
-	exit 0
+    echo "$0: <mount point>"
+    exit 0
 }
 
 [[ $# -lt 1 ]] && usage
