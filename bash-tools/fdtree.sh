@@ -17,7 +17,16 @@
 # fdtree.sh 
 #
 
-. env.sh
+WORKING_DIR=$PWD
+
+# binaries
+# if fdtree is in the PATH 
+if ! [ -z `which fdtree.bash` ]; then 
+	FDTREE_BINARY=fdtree.bash
+else
+	FDTREE_BINARY=./fdtree.bash
+fi
+
 
 #$1 mount point
 #$2 levels
@@ -39,9 +48,10 @@ usage() {
 
 [[ -z ${FDTREE_BINARY} ]] && echo "Can't find fdtree." && exit -1
 
-fdtree $1 500 1 0 0
-fdtree $1 1 20000 0 0
-fdtree $1 1 1 20000 1
-fdtree $1 6 5 6 1
+# fdtree $1 500 1 0 0
+# fdtree $1 1 20000 0 0
+# fdtree $1 1 1 20000 1
+# fdtree $1 6 5 6 1
+fdtree $1 3 3 2 1 # light test
 
 exit 0

@@ -33,3 +33,5 @@ if __name__ == "__main__":
 # p = subprocess.Popen(["/bin/bash", pos+"/test.sh", workdir, var], cwd="/tmp", stdout=subprocess.PIPE)
 # out, err = p.communicate()
 # sortie=os.popen("bash-tools/dd.sh "+workdir+" "+var, "r").read()
+# out, err = subprocess.Popen(["/bin/bash", pos+"/bash-tools/cp.sh", var], cwd=workdir, stdout=subprocess.PIPE).communicate()
+# ee =  os.environ.copy().get("PATH",'')+":"+os.getcwd()+"/bash-tools"
