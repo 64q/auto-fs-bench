@@ -17,7 +17,7 @@
 # pjdtest.sh 
 #
 
-. env.sh
+WORKING_DIR=$PWD
 
 #$1 mount point
 #$2 levels
