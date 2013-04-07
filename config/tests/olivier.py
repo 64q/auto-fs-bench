@@ -17,7 +17,7 @@ name = "olivier"
 comment = "bash scripts test"
 
 # modules de test à lancer
-modules = ["dd", "cp"]
+modules = ["dd", "cp", "bonnie", "iozone"]
 
 # liste des clients cibles du test
 clients = {
