@@ -19,12 +19,14 @@ def send_to_client(host, port, call, params=None, timeout=1, blocking=1):
     request = {"command": call, "params": params}
     # réponse préfabriquée override si le client répond
     response = {"command": call, "params": params, "returnValue": None}
+    # buffer nécessaire en socket non bloquantes
+    buffer_recv = ""
 
     # Création de la socket en mode TCP
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.settimeout(timeout)
 
-    done = False
+    done = 0
 
     try:
         sock.connect((host, port))
@@ -33,11 +35,16 @@ def send_to_client(host, port, call, params=None, timeout=1, blocking=1):
         sock.setblocking(blocking)
 
         if blocking == 0:
-            while not done:
+            while not done < 2:
                 try:
-                    response = json.loads(sock.recv(65536)) # FIXME
-                    done = True # stop la boucle infinie, car données reçues
+                    buffer_recv += sock.recv(65536) # FIXME
+                    done = 1 # on commence à recevoir les données
                 except socket.error:
+                    # si on repasse sur un résultat vide, c'est qu'on a tout recu
+                    if 1 == done:
+                        done = 2
+
+                    # on ralenti légèrement la vitesse d'interrogation
                     time.sleep(1)
         else:
             response = json.loads(sock.recv(65536)) # FIXME
@@ -46,6 +53,8 @@ def send_to_client(host, port, call, params=None, timeout=1, blocking=1):
     finally:
         sock.close()
     
+    response = json.loads(buffer_recv)
+
     return response
 
 def retreive_response():
