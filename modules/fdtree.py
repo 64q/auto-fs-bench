@@ -17,7 +17,7 @@ def test(workdir="./", var=""):
         text += "bash-tools/fdtree.bash missing"
         valid = True
     else:
-        os.chmod("bash-tools/fdtree.bash", stat.S_IWRITE | stat.S_IWRITE)
+        os.chmod("bash-tools/fdtree.bash", 0755)
     
     if not valid:
         raise core.errors.InvalidModuleError(text)
