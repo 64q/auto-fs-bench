@@ -13,30 +13,8 @@
 #  along with this program.  If not, see
 #  <http://www.gnu.org/licenses/>.
 
-#
-# fdtree.sh 
-#
-
 WORKING_DIR=$PWD
-
-# binaries
-# if fdtree is in the PATH 
-FDTREE_BINARY=`which fdtree.bash`
-# if fdtree is in the PATH 
-if [ -z "$FDTREE_BINARY" ]; then 
-    FDTREE_BINARY=`which ./fdtree.bash`
-fi
-
-#$1 mount point
-#$2 levels
-#$3 directories per level
-#$4 files per directory
-#$5 file size (in blocks 8k for rozofs)
-#$6 file log
-fdtree() {
-    flog=${WORKING_DIR}/fdtree_`date "+%Y%m%d_%Hh%Mm%Ss"`_`basename $1`_$2_$3_$4_$5.log
-    ${FDTREE_BINARY} -l $2 -d $3 -f $4 -s $5 -o $1 2>&1 | tee -a $flog
-}
+FSOP_BINARY=`which fileop`
 
 usage() {
     echo "$0: <mount point>"
@@ -45,20 +23,17 @@ usage() {
 
 [[ $# -lt 1 ]] && usage
 
-[[ -z ${FDTREE_BINARY} ]] && echo "Can't find fdtree." && exit -1
+[[ -z ${FSOP_BINARY} ]] && echo "Can't find fileop." && exit -1
 
-
-TESTDIR="$1/fdtree_${HOSTNAME}_$$"
+TESTDIR="$1/fileop_${HOSTNAME}_$$"
 mkdir $TESTDIR
 if [ 0 -ne $? ]; then
     usage
 fi
 
-# fdtree $TESTDIR 500 1 0 0
-# fdtree $TESTDIR 1 20000 0 0
-# fdtree $TESTDIR 1 1 20000 1
-# fdtree $TESTDIR 6 5 6 1
-fdtree $TESTDIR 3 3 2 1 # light test
+flog=${WORKING_DIR}/fileop_`date "+%Y%m%d_%Hh%Mm%Ss"`_`basename $1`.log
+# ${FSOP_BINARY} -l 1 -u 10 -i 1 -s 1M -d $TESTDIR 2>&1 | tee $flog
+${FSOP_BINARY} -l 1 -u 5 -i 1 -s 1M -d $TESTDIR 2>&1 | tee $flog # light test
 
 rm -rf $TESTDIR
 

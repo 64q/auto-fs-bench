@@ -19,7 +19,7 @@
 
 WORKING_DIR=$PWD
 # PID process + timer to create uniq file on client
-ROOT_FILENAME_TEST="file_$$_`date +%s%N`"
+ROOT_FILENAME_TEST="file_${HOSTNAME}_$$_`date +%s%N`"
 
 
 #$1 mountpoint

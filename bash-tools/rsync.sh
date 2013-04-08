@@ -37,12 +37,26 @@ usage() {
 flog=${WORKING_DIR}/rsync_`date "+%Y%m%d_%Hh%Mm%Ss"`_`basename $1`.log
 tmpd="/tmp/$$"
 
+TESTDIR="$1/fileop_${HOSTNAME}_$$"
+mkdir $TESTDIR
+if [ 0 -ne $? ]; then
+    usage
+fi
+
 mkdir $tmpd
+
 echo "Begin fdtree: $(date +%d-%m-%Y--%H:%M:%S)" >> $flog
 ${FDTREE_BINARY} -C -l 3 -d 15 -f 15 -s 2 -o $tmpd 2>&1 | tee -a $flog
 echo "End fdtree and begin rsync: $(date +%d-%m-%Y--%H:%M:%S)" >> $flog
-time ${RSYNC_BINARY} -avz $tmpd $1 2>&1 | tee -a $flog
+(time ${RSYNC_BINARY} -avz $tmpd $TESTDIR) 2>&1 | tee -a $flog
 echo "End rsync and Begin rm: $(date +%d-%m-%Y--%H:%M:%S)" >> $flog
-time rm -rf $1/* 2>&1 | tee -a $flog
+(time rm -rf $TESTDIR) 2>&1 | tee -a $flog
 echo "End rm: $(date +%d-%m-%Y--%H:%M:%S)" >> $flog
+
+# Clean the log file (-v of rsync)
+sed -i '/LEVEL0/d' $flog
+
+rm -rf $tmpd
+rm -rf $TESTDIR
+
 exit 0
