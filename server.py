@@ -67,17 +67,19 @@ class ServerCmd(cmd.Cmd):
         """Fonction pour lancer un benchmark sur la plateforme"""
         
         if test:
-            core.utils.print_title("Test de benchmark '%s'" % test, ruler='=')
-
-            print ">> Debut du test des modules"
-
             try:
                 # build de la configuration serveur
                 server_config = core.manager.build_server_config(test)
                 clients_results = dict()
 
+                # affichage header kikoo
+                core.utils.print_title("Test de benchmark '%s'" % test, ruler='=')
+
+                print ">> Debut du test des modules"
+
                 for module in server_config.modules:
                     threads = list()
+                    clients_results[module] = dict()
 
                     print ">> Execution du module '%s' en cours ..." % module
 
@@ -85,9 +87,6 @@ class ServerCmd(cmd.Cmd):
                         # configuration du client à envoyer
                         client_config = core.manager.build_client_config(server_config, client, module)
                         client_ip_addr = config.server.clients[client]
-
-                        # ajout du module dans les résultats
-                        clients_results[module] = dict()
 
                         # configuration et lancement du thread
                         thread = core.utils.threads_create_and_start(context, 
@@ -118,8 +117,8 @@ class ServerCmd(cmd.Cmd):
                             # sauvegarde des différents ichiers
                             core.tests.save_files(moduledir, filename, client, result)
 
-                        # test passé avec succès, on affiche
-                        print "  %s\t: resultat du test OK" % client
+                            # test passé avec succès, on affiche
+                            print "  %s\t: resultat du test OK" % client
                     except Exception as e:
                         # affichage de l'erreur dans la console
                         print "  %s\t: erreur de transmission (error: %s)" % (client, e)
@@ -141,7 +140,7 @@ class ServerCmd(cmd.Cmd):
         if test:
             print "Test de configuration du test '%s'" % test
 
-            server_config = core.manager.build_server_config(test)
+            server_config = core.manager.build_server_config(test, virtual=True)
 
             try:
                 for client in server_config.clients:

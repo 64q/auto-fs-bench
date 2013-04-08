@@ -11,18 +11,18 @@ import os, time
 import core.utils
 
 
-def generate_filename(config, module):
+def generate_filename(config, module, virtual=False):
     """
     Cette fonction génère le nom du fichier de sauvegarde de la sortie du script de bench
     """
 
     # chargement du dirname du module
-    dirname = generate_moduledir(config, module)
+    dirname = generate_moduledir(config, module, virtual)
 
     return dirname + "/" + module + "_" + time.strftime("%Y%m%d_%H%M%S", config.date) + ".csv"
 
 
-def generate_testdir(test_config):
+def generate_testdir(test_config, virtual=False):
     """
     Cette fonction génère le dossier du test
     """
@@ -33,13 +33,13 @@ def generate_testdir(test_config):
         + test_config.fs["version"] + "_" + time.strftime("%Y%m%d_%H%M%S", test_config.date)
 
     # le dossier est créé uniquement s'il n'existe pas
-    if not os.path.exists(dirname):
+    if not virtual and not os.path.exists(dirname):
         os.mkdir(dirname)
 
     return dirname
 
 
-def generate_moduledir(config, module):
+def generate_moduledir(config, module, virtual=False):
     """
     Cette fonction génère le dossier de sauvegarde des résultats s'il n'existe pas
 
@@ -50,7 +50,7 @@ def generate_moduledir(config, module):
     dirname = config.dirpath + "/" + module
 
     # le dossier est créé uniquement s'il n'existe pas
-    if not os.path.exists(dirname):
+    if not virtual and not os.path.exists(dirname):
         os.mkdir(dirname)
 
     return dirname
@@ -71,7 +71,7 @@ def build_client_config(config, client, module):
     return client_config
 
 
-def build_server_config(test):
+def build_server_config(test, virtual=False):
     """
     Construit la configuration du test chez le serveur
     """
@@ -81,11 +81,13 @@ def build_server_config(test):
     
     # ajout des variables de configuration supplémentaires
     setattr(config, "date", time.gmtime())
-    setattr(config, "dirpath", core.manager.generate_testdir(config))
+    setattr(config, "dirpath", core.manager.generate_testdir(config, virtual=virtual))
     
     # création des fichiers de données avec header
     for module in config.modules:
-        filename = generate_filename(config, module)
-        core.utils.csv_write_header(filename, config, module)
+        filename = generate_filename(config, module, virtual=virtual)
+
+        if not virtual:
+            core.utils.csv_write_header(filename, config, module)
         
     return config
