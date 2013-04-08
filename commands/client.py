@@ -49,18 +49,17 @@ def heartbeat(params=None):
 def run(params):
     """Fonction pour effectuer un test de benchmark"""
     
-    results = dict()
     response = dict(command = "test", returnValue = None)
 
     try:
-        mods = bench.modLoad(params["modules"])
+        print "params", params
+        # chargement du module en mémoire
+        mods = bench.modLoad([params["module"]])
 
-        for k in params["modules"]:
-            module = mods[k]
+        # exécution de la fonction de run du module
+        response["returnValue"] = bench.modLaunch(mods[params["module"]], "run", params["path"], nb=params["times"])
 
-            results[k] = bench.modLaunch(module, "run", params["path"], nb=params["times"])
-
-        response["returnValue"] = results
+        print "return", response["returnValue"]
     except core.errors.InvalidModuleError as e:
         response = error(e.__str__())
 

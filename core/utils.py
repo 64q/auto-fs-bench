@@ -71,6 +71,11 @@ def load_config_test(test):
     return importlib.import_module('config.tests.' + test)
 
 
+def print_title(content, ruler='-'):
+    print "%s" % ruler * 70
+    print content
+    print "%s" % ruler * 70
+
 class LoadingBarThread(threading.Thread):
     def __init__(self, nom = ''):
         threading.Thread.__init__(self)

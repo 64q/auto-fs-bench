@@ -15,7 +15,7 @@ def save_files(moduledir, filename, client, threads_results):
     """
 
     with open(filename, "ab") as csvfile:
-        for thread_id, thread_content in threads_results.iteritems():
+        for thread_id, thread_content in threads_results["returnValue"].iteritems():
             # écriture de la ligne de résultat 'return'
             core.utils.csv_write_line(csvfile, 
                 [client + "_" + thread_id, thread_content["return"]])
@@ -24,3 +24,4 @@ def save_files(moduledir, filename, client, threads_results):
             for fn, ct in thread_content["files"].iteritems():
                 with open(moduledir + "/" + client + "_" + thread_id + "_" + fn, "w") as fp:
                     fp.write(ct)
+        

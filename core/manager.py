@@ -1,10 +1,10 @@
 #encoding: utf-8
 
-'''
-Created on 4 avr. 2013
+"""
+Ce fichier contient un ensemble de fonctions utiles pour manipuler les configurations de test
 
 @author: Quentin
-'''
+"""
 
 import os, time
 
@@ -29,7 +29,8 @@ def generate_testdir(test_config):
 
     # chargement de la configuration et génération dirname
     config = core.utils.load_config_server()
-    dirname = config.save_dir + "/" + test_config.name + "_" + test_config.fs["name"] + "_" + test_config.fs["version"] + "_" + time.strftime("%Y%m%d_%H%M%S", test_config.date)
+    dirname = config.save_dir + "/" + test_config.name + "_" + test_config.fs["name"] + "_" \
+        + test_config.fs["version"] + "_" + time.strftime("%Y%m%d_%H%M%S", test_config.date)
 
     # le dossier est créé uniquement s'il n'existe pas
     if not os.path.exists(dirname):
@@ -55,7 +56,7 @@ def generate_moduledir(config, module):
     return dirname
 
 
-def build_client_config(config, client):
+def build_client_config(config, client, module):
     """
     Construit la configuration du test chez le client
     """
@@ -63,7 +64,7 @@ def build_client_config(config, client):
     # création config client
     client_config = dict(
         path = config.clients[client]["path"],
-        modules = config.modules,
+        module = module,
         times = config.clients[client]["times"]
     )
 

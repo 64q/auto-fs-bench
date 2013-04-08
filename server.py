@@ -67,57 +67,66 @@ class ServerCmd(cmd.Cmd):
         """Fonction pour lancer un benchmark sur la plateforme"""
         
         if test:
-            print "Test de benchmark '%s'" % test
+            core.utils.print_title("Test de benchmark '%s'" % test, ruler='=')
+
+            print ">> Debut du test des modules"
 
             try:
                 # build de la configuration serveur
                 server_config = core.manager.build_server_config(test)
                 clients_results = dict()
-                threads = list()
 
-                for client in server_config.clients:
-                    # configuration du client à envoyer
-                    client_config = core.manager.build_client_config(server_config, client)
-                    client_ip_addr = config.server.clients[client]
+                for module in server_config.modules:
+                    threads = list()
 
-                    # configuration et lancement du thread
-                    thread = core.utils.threads_create_and_start(context, 
-                        (clients_results, client, (client_ip_addr, config.server.send_port, client_config)))
+                    print ">> Execution du module '%s' en cours ..." % module
 
-                    # ajout dans la liste des threads
-                    threads.append(thread)
-                
-                # lancement loading bar dans un thread dédié
-                loading_thread = core.utils.LoadingBarThread()
-                loading_thread.start()
+                    for client in server_config.clients:
+                        # configuration du client à envoyer
+                        client_config = core.manager.build_client_config(server_config, client, module)
+                        client_ip_addr = config.server.clients[client]
 
-                # on attend que tous les threads se terminent pour continuer
-                core.utils.threads_join_all(threads)
-                
-                # on stoppe aussi la loading bar
-                loading_thread.stop()
-                loading_thread.join()
+                        # ajout du module dans les résultats
+                        clients_results[module] = dict()
 
-                print "Fin du test de benchmark"
+                        # configuration et lancement du thread
+                        thread = core.utils.threads_create_and_start(context, 
+                            (clients_results[module], client, 
+                                (client_ip_addr, config.server.send_port, client_config)))
+
+                        # ajout dans la liste des threads
+                        threads.append(thread)
+
+                    # on attend que tous les threads se terminent pour continuer
+                    core.utils.threads_join_all(threads)
+
+                print ">> Fin du test de benchmark"
 
                 # lecture de chaque client et de ses résultats de thread
-                for client, result in clients_results.iteritems():
+                for module, module_results in clients_results.iteritems():
+                    core.utils.print_title("Resultats du module '%s'" % module)
+
                     try:
-                        # on vérifie que le résultat n'est pas une erreur
-                        core.transmission.check_transmission(result)
-
-                        print "  %s\t: resultat du test OK" % client
-
-                        # on boucle sur tous les threads du client récupéré
-                        for modname, threads_results in result["returnValue"].iteritems():
+                        for client, result in module_results.iteritems():
                             # génération des chemins de sauvegarde
-                            moduledir = core.manager.generate_moduledir(server_config, modname)
-                            filename = core.manager.generate_filename(server_config, modname)
+                            moduledir = core.manager.generate_moduledir(server_config, module)
+                            filename = core.manager.generate_filename(server_config, module)
+
+                            # on vérifie que le résultat n'est pas une erreur
+                            core.transmission.check_transmission(result)
 
                             # sauvegarde des différents ichiers
-                            core.tests.save_files(moduledir, filename, client, threads_results)
+                            core.tests.save_files(moduledir, filename, client, result)
+
+                        # test passé avec succès, on affiche
+                        print "  %s\t: resultat du test OK" % client
                     except Exception as e:
+                        # affichage de l'erreur dans la console
                         print "  %s\t: erreur de transmission (error: %s)" % (client, e)
+
+                        # enregistrement dans le fichier de résumé
+                        with open(filename, "ab") as csvfile:
+                            core.utils.csv_write_line(csvfile, [client, e.__str__()])
             except ImportError as e:
                 print "error: %s" % e
         else:
