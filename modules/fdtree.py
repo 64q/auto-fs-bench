@@ -15,7 +15,7 @@ def test(workdir="./", var=""):
 
     if not os.path.isfile("bash-tools/fdtree.bash"):
         text += "bash-tools/fdtree.bash missing"
-        valid = True
+        valid = False
     else:
         os.chmod("bash-tools/fdtree.bash", 0755)
     
