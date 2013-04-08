@@ -42,7 +42,7 @@ def run(workdir="./", var=""):
     # Récupérer la sortie du process
     out, err = p.communicate()
     
-    return out
+    return "-"
 
 def format(workdir="./", var=""):
     return ""
