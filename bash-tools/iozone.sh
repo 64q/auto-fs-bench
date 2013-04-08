@@ -42,7 +42,8 @@ flog=${WORKING_DIR}/iozone_`date "+%Y%m%d_%Hh%Mm%Ss"`_`basename $1`.log
 
 # ${IOZONE_BINARY} -ac $1 -f $ftest | tee $flog
 # ${IOZONE_BINARY} -ac -f $ftest 2>&1 | tee $flog
-${IOZONE_BINARY} -ac $1 -g 4049 -f $ftest -b ${flog}.xls
+# We use stdout to save iozone output
+${IOZONE_BINARY} -ac $1 -g 4049 -f $ftest #-b ${flog}.xls # light test
 
 
 
