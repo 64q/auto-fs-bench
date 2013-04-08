@@ -6,12 +6,18 @@ Ce module utilise les scripts bash fdtree.sh et fdtree.bash
 """
 
 
-import os, subprocess
+import os, subprocess, stat
 import core.errors
 
 def test(workdir="./", var=""):
     valid = True
     text = ""
+
+    if not os.path.isfile("bash-tools/fdtree.bash"):
+        text += "bash-tools/fdtree.bash missing"
+        valid = True
+    else:
+        os.chmod("bash-tools/fdtree.bash", stat.S_IWRITE | stat.S_IWRITE)
     
     if not valid:
         raise core.errors.InvalidModuleError(text)
