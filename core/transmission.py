@@ -35,24 +35,25 @@ def send_to_client(host, port, call, params=None, timeout=1, blocking=1):
         sock.setblocking(blocking)
 
         if blocking == 0:
-            while not done < 2:
+            while done < 2:
                 try:
-                    buffer_recv += sock.recv(65536) # FIXME
-                    done = 1 # on commence à recevoir les données
-                except socket.error:
-                    # si on repasse sur un résultat vide, c'est qu'on a tout recu
-                    if 1 == done:
-                        done = 2
+                    current_recv = sock.recv(4096)
+                    buffer_recv = buffer_recv + current_recv # FIXME
 
+                    done = 1 # on commence à recevoir les données
+
+                    if len(current_recv) == 0:
+                        done = 2
+                except socket.error:
                     # on ralenti légèrement la vitesse d'interrogation
                     time.sleep(1)
         else:
-            response = json.loads(sock.recv(65536)) # FIXME
+            buffer_recv = sock.recv(4096) # FIXME
     except socket.timeout:
         raise core.errors.ClientTimeoutError("client '%s' timeout" % host)
     finally:
         sock.close()
-    
+
     response = json.loads(buffer_recv)
 
     return response
