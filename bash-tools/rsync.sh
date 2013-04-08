@@ -37,7 +37,7 @@ usage() {
 flog=${WORKING_DIR}/rsync_`date "+%Y%m%d_%Hh%Mm%Ss"`_`basename $1`.log
 tmpd="/tmp/$$"
 
-TESTDIR="$1/fileop_${HOSTNAME}_$$"
+TESTDIR="$1/rsync_${HOSTNAME}_$$"
 mkdir $TESTDIR
 if [ 0 -ne $? ]; then
     usage
