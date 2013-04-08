@@ -75,7 +75,7 @@ class ServerCmd(cmd.Cmd):
                 # affichage header kikoo
                 core.utils.print_title("Test de benchmark '%s'" % test, ruler='=')
 
-                print ">> Debut du test des modules"
+                print ">> Debut du test module par module"
 
                 for module in server_config.modules:
                     threads = list()
@@ -105,8 +105,8 @@ class ServerCmd(cmd.Cmd):
                 for module, module_results in clients_results.iteritems():
                     core.utils.print_title("Resultats du module '%s'" % module)
 
-                    try:
-                        for client, result in module_results.iteritems():
+                    for client, result in module_results.iteritems():
+                        try:
                             # génération des chemins de sauvegarde
                             moduledir = core.manager.generate_moduledir(server_config, module)
                             filename = core.manager.generate_filename(server_config, module)
@@ -119,13 +119,13 @@ class ServerCmd(cmd.Cmd):
 
                             # test passé avec succès, on affiche
                             print "  %s\t: resultat du test OK" % client
-                    except Exception as e:
-                        # affichage de l'erreur dans la console
-                        print "  %s\t: erreur de transmission (error: %s)" % (client, e)
+                        except Exception as e:
+                            # affichage de l'erreur dans la console
+                            print "  %s\t: erreur de transmission (error: %s)" % (client, e)
 
-                        # enregistrement dans le fichier de résumé
-                        with open(filename, "ab") as csvfile:
-                            core.utils.csv_write_line(csvfile, [client, e.__str__()])
+                            # enregistrement dans le fichier de résumé
+                            with open(filename, "ab") as csvfile:
+                                core.utils.csv_write_line(csvfile, [client, e.__str__()])
             except ImportError as e:
                 print "error: %s" % e
         else:
