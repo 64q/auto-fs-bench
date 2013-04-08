@@ -17,7 +17,7 @@ name = "c07-2"
 comment = "bash scripts test"
 
 # modules de test à lancer
-modules = ["cp", "dd", "fdtree", "fileop", "iozone", "rsync"]
+modules = ["cp", "dd", "du", "fdtree", "fileop", "iozone", "rsync"]
 
 # liste des clients cibles du test
 clients = {
