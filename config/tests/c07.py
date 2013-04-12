@@ -17,13 +17,12 @@ name = "c07"
 comment = "bash scripts test"
 
 # modules de test à lancer
-modules = ["bonnie", "cp", "dd", "fdtree", "fileop", "iozone", "rsync"]
+modules = ["cp", "dd", "fdtree", "fileop", "iozone"]
 
 # liste des clients cibles du test
 clients = {
     "ptrans1": {"path": "/srv", "times": 1},
-    "ptrans2": {"path": "/srv", "times": 1},
-    "ptrans3": {"path": "/srv", "times": 1}
+    "ptrans2": {"path": "/srv", "times": 1}
 }
 
 # spécifications sur le système de fichier testé
