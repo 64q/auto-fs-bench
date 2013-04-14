@@ -9,6 +9,7 @@ Created on 27 févr. 2013
 import json
 
 import core.errors
+import core.monitoring
 import bench
 
 
@@ -56,11 +57,17 @@ def run(params):
         # chargement du module en mémoire
         mods = bench.modLoad([params["module"]])
 
+        monitor = core.monitoring.Monitoring()
+        monitor.start()
+
         # exécution de la fonction de run du module
         response["returnValue"] = bench.modLaunch(mods[params["module"]], "run", params["path"], nb=params["times"])
 
+        response["monitoring"] = monitor.stop()
+
         print "return", response["returnValue"]
     except core.errors.InvalidModuleError as e:
+        monitor.stop()
         response = error(e.__str__())
 
     return response
