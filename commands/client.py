@@ -7,6 +7,8 @@ Created on 27 févr. 2013
 '''
 
 import json
+import sys
+import time
 
 import core.errors
 import core.monitoring
@@ -60,19 +62,26 @@ def run(params):
         # Monitoring de la machine pendant les tests
         monitor = core.monitoring.Monitoring()
         monitor.start()
+        print "aaaaaaaaaaa"
         time.sleep(5)   # Tempo de 5 secondes pour avoir l'état de base de la machine
+        print "bbbbbbbb"
 
         # exécution de la fonction de run du module
         response["returnValue"] = bench.modLaunch(mods[params["module"]], "run", params["path"], nb=params["times"])
-
+        print "cccccccccc"
+        
         # Arret du monitoring et récupération des données
-        response["monitoring"] = monitoring.graphFile(monitor.stop())
+        response["monitoring"] = dict()
+        response["monitoring"] = core.monitoring.graphFile(monitor.stop())
+        # print core.monitoring.graphFile(monitor.stop())
 
         print "return", response["returnValue"]
     except core.errors.InvalidModuleError as e:
         response = error(e.__str__())
         monitor.stop()  # Arret du thread de monitoring
-    else:
+    except:
+        print "Unexpected error:", sys.exc_info()[0]
         monitor.stop()  # Arret du thread de monitoring
+        raise
 
     return response
