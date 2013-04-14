@@ -66,11 +66,13 @@ def run(params):
         response["returnValue"] = bench.modLaunch(mods[params["module"]], "run", params["path"], nb=params["times"])
 
         # Arret du monitoring et récupération des données
-        response["monitoring"] = monitor.stop()
+        response["monitoring"] = monitoring.graphFile(monitor.stop())
 
         print "return", response["returnValue"]
     except core.errors.InvalidModuleError as e:
-        monitor.stop()  # Arret du thread de monitoring
         response = error(e.__str__())
+        monitor.stop()  # Arret du thread de monitoring
+    else:
+        monitor.stop()  # Arret du thread de monitoring
 
     return response
