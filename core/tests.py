@@ -8,6 +8,7 @@ Ce fichier contient des fonctions utilitaires pour la gestion des tests de bench
 """
 
 import core.utils
+# import core.monitoring
 
 def save_files(moduledir, filename, client, threads_results):
     """
@@ -24,4 +25,6 @@ def save_files(moduledir, filename, client, threads_results):
             for fn, ct in thread_content["files"].iteritems():
                 with open(moduledir + "/" + client + "_" + thread_id + "_" + fn, "w") as fp:
                     fp.write(ct)
-        
+    
+    # Création des graphiques associés
+    # core.monitoring.graph(threads_results["monitoring"],  moduledir+"/"+client)

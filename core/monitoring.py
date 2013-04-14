@@ -78,10 +78,11 @@ def timeRange(duration, inter=1):
 def graph(val=dict(), prefix = ''):
     """Création des graphiques associés aux résultats"""
     # Vérification qu'il y a des valeurs
-    if(len(val) > 0):
-        if not (len(val["time"]) > 1):
-            return
-    else:
+    if not (type(val) == dict):
+        return
+    if not "time" in val.keys():
+        return
+    if not (len(val["time"]) > 1):
         return
 
     # reset
