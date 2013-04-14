@@ -57,17 +57,20 @@ def run(params):
         # chargement du module en mémoire
         mods = bench.modLoad([params["module"]])
 
+        # Monitoring de la machine pendant les tests
         monitor = core.monitoring.Monitoring()
         monitor.start()
+        time.sleep(5)   # Tempo de 5 secondes pour avoir l'état de base de la machine
 
         # exécution de la fonction de run du module
         response["returnValue"] = bench.modLaunch(mods[params["module"]], "run", params["path"], nb=params["times"])
 
+        # Arret du monitoring et récupération des données
         response["monitoring"] = monitor.stop()
 
         print "return", response["returnValue"]
     except core.errors.InvalidModuleError as e:
-        monitor.stop()
+        monitor.stop()  # Arret du thread de monitoring
         response = error(e.__str__())
 
     return response

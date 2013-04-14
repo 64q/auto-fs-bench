@@ -5,6 +5,7 @@
 @author: Olivier
 """
 
+import os
 import psutil
 import time
 import sys
@@ -156,6 +157,38 @@ def graph(val=dict(), prefix = ''):
     plt.clf()
 
 
+def graphFile(val=dict()):
+    # valeur de retour
+    res = dict()
+
+    # Création d'un dossier tmp
+    num = 0
+    ok = False
+    while not ok:
+        rep = 'tmp_' + str(num)
+        try:
+            os.mkdir(rep)
+            ok = True
+        except OSError:
+            num += 1
+
+    # Appel de la fonction graph()
+    graph(val, rep+"/")
+
+    # récupération des fichiers
+    content = os.listdir(rep)
+    for x in content:
+        f = open('./'+rep+'/'+x, 'r')
+        res[x] = f.read()
+        f.close()
+        os.remove('./'+rep+'/'+x)
+
+    # suppression du dossier
+    os.rmdir(rep)
+    return res
+
+
+
 class Monitoring(threading.Thread):
     """Récupération des résultats en arroère plan"""
     def __init__(self):
@@ -192,4 +225,3 @@ class Monitoring(threading.Thread):
         return self.val
 
 
-    
