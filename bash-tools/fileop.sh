@@ -32,8 +32,8 @@ if [ 0 -ne $? ]; then
 fi
 
 flog=${WORKING_DIR}/fileop_`date "+%Y%m%d_%Hh%Mm%Ss"`_`basename $1`.log
-# ${FSOP_BINARY} -l 1 -u 10 -i 1 -s 1M -d $TESTDIR 2>&1 | tee $flog
-${FSOP_BINARY} -l 1 -u 5 -i 1 -s 1M -d $TESTDIR 2>&1 | tee $flog # light test
+${FSOP_BINARY} -l 1 -u 10 -i 1 -s 1M -d $TESTDIR 2>&1 | tee $flog
+# ${FSOP_BINARY} -l 1 -u 5 -i 1 -s 1M -d $TESTDIR 2>&1 | tee $flog # light test
 
 rm -rf $TESTDIR
 

@@ -29,8 +29,8 @@ do_cp()
     FILE_LOG=${WORKING_DIR}/cp_`date "+%Y%m%d_%Hh%Mm%Ss"`_`basename $1`.log
     echo -e "size(MB)\t\tput(s)\tget(s)" > ${FILE_LOG}
 
-    #for count in 1 10 100 1000 10000; do
-    for count in 2 4 8 16 32 48 64 96 128 160; do # light test
+    for count in 1 10 100 1000 10000; do
+    # for count in 2 4 8 16 32 48 64 96 128 160; do # light test
         # work file name
         FILENAME=${ROOT_FILENAME_TEST}_cp
 
@@ -46,7 +46,7 @@ do_cp()
             rm -f $WORKING_DIR/$FILENAME
 
         # Tempo between put and Get action
-        sleep 1
+        sleep 5
         # Conflit pour l'exécution parallèle
         #sleep 3;umount ${1};sleep 3;mount ${1};sleep 3;
 

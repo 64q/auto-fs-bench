@@ -30,8 +30,6 @@ def save_files(moduledir, filename, client, threads_results):
         # Récupération des fichiers de monitoring
         if "monitoring" in threads_results.keys():
             for mon_elem, mon_res in threads_results["monitoring"].iteritems():
-                with open(moduledir + "/" + client + "_" + "monitoring" + mon_elem, "w") as fp:
+                with open(moduledir + "/_" + mon_elem + "_" + client, "w") as fp:
                     fp.write(base64.b64decode(mon_res))
 
-    # Création des graphiques associés
-    # core.monitoring.graph(threads_results["monitoring"],  moduledir+"/"+client)

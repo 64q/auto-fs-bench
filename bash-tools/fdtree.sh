@@ -54,11 +54,14 @@ if [ 0 -ne $? ]; then
     usage
 fi
 
-# fdtree $TESTDIR 500 1 0 0
-# fdtree $TESTDIR 1 20000 0 0
-# fdtree $TESTDIR 1 1 20000 1
-# fdtree $TESTDIR 6 5 6 1
-fdtree $TESTDIR 3 3 2 1 # light test
+fdtree $TESTDIR 500 1 0 0
+sleep 5
+fdtree $TESTDIR 1 20000 0 0
+sleep 5
+fdtree $TESTDIR 1 1 20000 1
+sleep 5
+fdtree $TESTDIR 6 5 6 1
+# fdtree $TESTDIR 3 3 2 1 # light test
 
 rm -rf $TESTDIR
 
