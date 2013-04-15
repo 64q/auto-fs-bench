@@ -15,6 +15,7 @@ clients = dict(
     localhost = "127.0.0.1",
     servoliv = "192.168.0.50",
     raspberry = "192.168.0.3",
+    nantarena = "192.168.0.147",
     ptrans1 = "10.0.2.51",
     ptrans2 = "10.0.2.53",
     ptrans3 = "10.0.2.52",

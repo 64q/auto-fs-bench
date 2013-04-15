@@ -21,7 +21,7 @@ modules = ["dd", "cp", "iozone"]
 
 # liste des clients cibles du test
 clients = {
-    "servoliv": {"path": "/srv", "times": 1}
+    "nantarena": {"path": "/srv", "times": 1}
 }
 
 # spécifications sur le système de fichier testé

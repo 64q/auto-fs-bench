@@ -4,6 +4,7 @@
 import os
 import threading
 import time
+import base64
 
 import core.errors
 
@@ -101,7 +102,7 @@ def context(pfonc, result, name, param=""):
     tmp = dict()
     for x in content:
         f = open('./'+rep+'/'+x, 'r')
-        tmp[x] = f.read()
+        tmp[x] = base64.b64encode(f.read())
         f.close()
     
     result[name]['files'] = tmp

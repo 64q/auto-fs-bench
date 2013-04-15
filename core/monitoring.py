@@ -11,6 +11,7 @@ import time
 import sys
 import threading
 import matplotlib
+import base64
 # Pour le support console sans serveur x
 matplotlib.use('Agg')
 from pylab import *
@@ -179,7 +180,7 @@ def graphFile(val=dict()):
     content = os.listdir(rep)
     for x in content:
         f = open('./'+rep+'/'+x, 'r')
-        res[x] = f.read()
+        res[x] = base64.b64encode(f.read())
         f.close()
         os.remove('./'+rep+'/'+x)
 
