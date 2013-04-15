@@ -135,10 +135,13 @@ def graph(val=dict(), prefix = ''):
     lior, liow = ax2.plot(dx, iorf, 'g-', dx, iowf, 'r-')
     ax2.grid(True)
     ax2.axhline(0, color='black', lw=2)
+    # Agencement du temps
+    ax2.set_xlim(0,dx[len(dx)-1])
 
 
     # Graphique pour le réseau
     ax3.set_ylabel('Network incoming - outgoing (in Ko/sec)')
+
 
     nets = []
     netr = []
@@ -161,6 +164,9 @@ def graph(val=dict(), prefix = ''):
     # Legend
     fig.legend((lcpu, lmem,lswp, lior, liow, lnets, lnetr), \
         ('CPU', 'Memory', 'Swap', 'Disk read', 'Disk write', 'Network out', 'Network in'), 'right')
+
+    # Agencement du temps
+    ax3.set_xlim(0,dx[len(dx)-1])
 
     # Ecriture du fichier du graphique
     fig.savefig(prefix+'monitoring.svg')
