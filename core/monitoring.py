@@ -28,7 +28,7 @@ def getSysInfo():
     val["io_write"] = [psutil.disk_io_counters(perdisk=False)[3]]
     val["net_sent"] = [psutil.network_io_counters(pernic=False)[0]]
     val["net_recv"] = [psutil.network_io_counters(pernic=False)[1]]
-    val["cpu"]      = [psutil.cpu_percent(interval=0.5)]
+    val["cpu"]      = [psutil.cpu_percent(interval=0.8)]
     return val
 
 
@@ -52,7 +52,7 @@ def getSI(val=None):
     val["io_write"] += [psutil.disk_io_counters(perdisk=False)[3]]
     val["net_sent"] += [psutil.network_io_counters(pernic=False)[0]]
     val["net_recv"] += [psutil.network_io_counters(pernic=False)[1]]
-    val["cpu"]      += [psutil.cpu_percent(interval=0.5)]
+    val["cpu"]      += [psutil.cpu_percent(interval=0.8)]
     return val
 
 
@@ -93,21 +93,27 @@ def graph(val=dict(), prefix = ''):
     # Création de la liste des temps
     dx = [int(round(i-val["time"][0])) for i in val["time"]]
 
-    # Graphique pour le CPU, la RAM et le SWAP
-    fig = figure(figsize=(20,10))
-    plt.ylabel('red : cpu - blue : mem - green : swap (in %)')
-    plt.xlabel('time in seconde')
-    plt.title('CPU, RAM and SWAP Usage')
-    plt.plot(dx, val["cpu"], 'r-', dx, val["mem"], 'b-', dx, val["swap"], 'g-')
-    plt.axis([0, dx[len(dx)-1], 0, 100])
-    fig.savefig(prefix+'_cpu_ram_swap.svg')
-    plt.clf()
+    # Création de la figure et des axes associés
+    fig = figure(figsize=(20,20))
+    ax1 = fig.add_axes([0.05, 0.57, 0.9, 0.4])
+    ax2 = fig.add_axes([0.05, 0.03, 0.9, 0.4])
+    ax3 = ax2.twinx()
 
-    # Graphique pour le disque
-    fig = figure(figsize=(20,10))
-    plt.ylabel('blue : read - red : write (in Ko/sec)')
-    plt.xlabel('time in seconde')
-    plt.title('Disk Usage')
+    # Graphique pour le CPU, la RAM et le SWAP
+    ax1.set_ylabel('cpu - mem - swap (in %)')
+    ax1.set_xlabel('time in seconde')
+    ax1.set_title('CPU, RAM and SWAP Usage')
+    lcpu, lmem, lswp = ax1.plot(dx, val["cpu"], 'r-', dx, val["mem"], 'b-', dx, val["swap"], 'y-')
+    ax1.axis([0, dx[len(dx)-1], 0, 101])
+    ax1.grid(True)
+    ax1.axhline(0, color='black', lw=2)
+
+
+
+    # GRafique pour le disque
+    ax2.set_ylabel('Disk read - write (in Ko/sec)')
+    ax2.set_xlabel('time in seconde')
+    ax2.set_title('Disk and Network Usage')
 
     ior = []
     iow = []
@@ -121,20 +127,18 @@ def graph(val=dict(), prefix = ''):
         tmpw = w
         tmpt = t
 
-    # Passage byte à Ko
-    iorf = [int(i/1000) for i in ior]
-    iowf = [int(i/1000) for i in iow]
 
-    plt.plot(dx, iorf, 'b-', dx, iowf, 'r-')
-    fig.savefig(prefix+'_disk.svg')
-    plt.clf()
+    # Passage byte à Ko
+    iorf = [int(i/1024/1024) for i in ior]
+    iowf = [int(u/1024/1024) for u in iow]
+
+    lior, liow = ax2.plot(dx, iorf, 'g-', dx, iowf, 'r-')
+    ax2.grid(True)
+    ax2.axhline(0, color='black', lw=2)
 
 
     # Graphique pour le réseau
-    fig = figure(figsize=(20,10))
-    plt.ylabel('blue : outgoing - red : incoming (in Ko/sec)')
-    plt.xlabel('time in seconde')
-    plt.title('Network Usage')
+    ax3.set_ylabel('Network incoming - outgoing (in Ko/sec)')
 
     nets = []
     netr = []
@@ -149,13 +153,18 @@ def graph(val=dict(), prefix = ''):
         tmpt = t
 
     # Passage byte à Ko
-    netsf = [int(i/1000) for i in nets]
-    netrf = [int(i/1000) for i in netr]
+    netsf = [int(i/1024/1024) for i in nets]
+    netrf = [int(i/1024/1024) for i in netr]
 
-    plt.plot(dx, netsf, 'b-', dx, netrf, 'r-')
-    fig.savefig(prefix+'_network.svg')
-    close()
-    plt.clf()
+    lnets, lnetr = ax3.plot(dx, netsf, 'm-', dx, netrf, 'b-')
+    
+    # Legend
+    fig.legend((lcpu, lmem,lswp, lior, liow, lnets, lnetr), \
+        ('CPU', 'Memory', 'Swap', 'Disk read', 'Disk write', 'Network out', 'Network in'), 'right')
+
+    # Ecriture du fichier du graphique
+    fig.savefig(prefix+'monitoring.svg')
+    fig.clf()
 
 
 def graphFile(val=dict()):
@@ -192,11 +201,11 @@ def graphFile(val=dict()):
 
 class Monitoring(threading.Thread):
     """Récupération des résultats en arroère plan"""
-    def __init__(self):
+    def __init__(self, inter=1):
         threading.Thread.__init__(self)
         self.val = None
         self.ok = True
-        self.inter = 1
+        self.inter = inter
         self.Terminated = False
 
     def run(self):
