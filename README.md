@@ -9,7 +9,7 @@ Application de benchmark automatisé sur systèmes de fichier
 
 Dépendances python nécessaires à installer sur les clients :
 
-* `python-argparse, python-psutil, python-matplotlib`
+* `python-argparse, python-psutil (0.7.0), python-matplotlib`
 
 Dépendances python nécessaires à installer sur le serveur :
 
