@@ -7,9 +7,10 @@ Ce fichier contient des fonctions utilitaires pour la gestion des tests de bench
 @author Quentin
 """
 
-import core.utils
 import json
 import base64
+
+import core.utils
 
 def save_files(moduledir, filename, client, threads_results):
     """

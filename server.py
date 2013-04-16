@@ -13,7 +13,7 @@ import argparse, cmd
 import csv
 
 import core.utils, core.manager, core.tests
-import commands.server
+import core.commands.server
 import config.server
 
 # definition des variables de description
@@ -34,17 +34,17 @@ class ServerArgumentParser(argparse.ArgumentParser):
         # ajout des paramètres de lancement
         
         # test à lancer
-        self.add_argument('bench_test', nargs="?",
-                          help="test de benchmark a lancer (exemple: simple), optionnel si -c est renseigne")
+        self.add_argument('bench_test', nargs="?", 
+            help="test de benchmark a lancer (exemple: simple), optionnel si -c est renseigne")
         # lancement en sous shell
-        self.add_argument("-s", "--shell", action="store_true", dest="shell",
-                          help="lance la ligne de commande en mode interactif, ignore l'argument bench_test")
+        self.add_argument("-s", "--shell", action="store_true", dest="shell", 
+            help="lance la ligne de commande en mode interactif, ignore l'argument bench_test")
         # lancement en mode verbeux
         self.add_argument("-v", "--verbose", action="count", dest="verbose", 
-                          help="parametrage du mode verbose")
+            help="parametrage du mode verbose")
         # port d'envoi du serveur aux clients
         self.add_argument("-p", "--port", default=config.server.send_port, type=int, dest="port", 
-                          help="port d'envoi du serveur (default: 7979)")
+            help="port d'envoi du serveur (default: 7979)")
 
 
 class ServerCmd(cmd.Cmd):
@@ -145,7 +145,7 @@ class ServerCmd(cmd.Cmd):
             try:
                 for client in server_config.clients:
                     # execution de la fonction de test sur chacun des client cible du test
-                    response = commands.server.test(config.server.clients[client], config.server.send_port, server_config.modules)
+                    response = core.commands.server.test(config.server.clients[client], config.server.send_port, server_config.modules)
 
                     if response["command"] == "test":
                         print "  %s\t: %s" % (client, "test operationnel")
@@ -167,7 +167,7 @@ class ServerCmd(cmd.Cmd):
             print "Liste des clients"
 
             for client, ip in config.server.clients.iteritems():
-                result = commands.server.heartbeat(ip, config.server.send_port)
+                result = core.commands.server.heartbeat(ip, config.server.send_port)
                 
                 if result["command"] == "heartbeat":
                     print "  %s\t: %s" % (client, "Online")
@@ -212,7 +212,7 @@ class ServerCmd(cmd.Cmd):
 
 
 def context(result, client, params):
-    result[client] = commands.server.run(params[0], params[1], params[2])
+    result[client] = core.commands.server.run(params[0], params[1], params[2])
 
 def main():
     """Fonction de main pour le serveur"""
@@ -234,9 +234,7 @@ def main():
     
     cmd = ServerCmd()
 
-    
-
-    # lancement en mode interactif (CLI)
+    # lancement en mode interactif (Shell)
     if args.shell:
         cmd.cmdloop()
     # lancement non interactif
