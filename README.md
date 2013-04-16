@@ -7,6 +7,14 @@ Application de benchmark automatisé sur systèmes de fichier
 
 ## Installation
 
+Dépendances python nécessaires à installer sur les clients :
+
+* `python-argparse, python-psutil (0.7.0), python-matplotlib`
+
+Dépendances python nécessaires à installer sur le serveur :
+
+* `python-argparse`
+
 Pour utiliser le logiciel, vous devez simplement cloner le dépôt `git clone https://github.com/KenTiN/auto-fs-bench.git`.
 
 * Pour lancer le client `python client.py`

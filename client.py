@@ -16,7 +16,7 @@ import threading
 import SocketServer
 
 import config.client
-import commands.client
+import core.commands.client
 
 
 # configuration client
@@ -56,16 +56,16 @@ class ClientHandler(SocketServer.StreamRequestHandler):
         
         request = json.loads(self.data)
 
-        print "Receive from {0} request >> {1}".format(self.client_address[0], request)
+        print ">> Receive from {0} request >> {1}".format(self.client_address[0], request)
 
-        # traitement des commandes recues
+        # traitement des commandes recues en appelant directement la commande du module
         
         try:
-            response = getattr(commands.client, request["command"])(request["params"])
+            response = getattr(core.commands.client, request["command"])(request["params"])
         except Exception as e:
-            response = commands.client.error("%s" % e)
+            response = core.commands.client.error("%s" % e)
 
-        print "Sent back response >> %s" % response
+        print ">> Sent back response >> %s" % response
         
         self.request.sendall(json.dumps(response))
 

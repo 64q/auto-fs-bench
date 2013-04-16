@@ -12,7 +12,7 @@ import time
 
 import core.errors
 import core.monitoring
-import bench
+import core.benchutils
 
 
 def error(reason="Generic error"):
@@ -30,7 +30,7 @@ def test(params):
 
     try:
         # chargement des modules nécessaires au test
-        modules = bench.modLoad(params["modules"])
+        modules = core.benchutils.modLoad(params["modules"])
 
         # test de chacun des modules
         for modname, modfns in modules.iteritems():
@@ -55,9 +55,9 @@ def run(params):
     response = dict(command = "test", returnValue = None)
 
     try:
-        print "params", params
+        print ">> params = %s" % params
         # chargement du module en mémoire
-        mods = bench.modLoad([params["module"]])
+        mods = core.benchutils.modLoad([params["module"]])
 
         # Monitoring de la machine pendant les tests
         monitor = core.monitoring.Monitoring()
@@ -65,13 +65,13 @@ def run(params):
         time.sleep(5)   # Tempo de 5 secondes pour avoir l'état de base de la machine
 
         # exécution de la fonction de run du module
-        response["returnValue"] = bench.modLaunch(mods[params["module"]], "run", params["path"], nb=params["times"])
+        response["returnValue"] = core.benchutils.modLaunch(mods[params["module"]], "run", params["path"], nb=params["times"])
         
         # Arret du monitoring et récupération des données
         response["monitoring"] = dict()
         response["monitoring"] = core.monitoring.graphFile(monitor.stop())
 
-        print "return", response["returnValue"]
+        print ">> return = %s" % response["returnValue"]
     except core.errors.InvalidModuleError as e:
         response = error(e.__str__())
         monitor.stop()  # Arret du thread de monitoring

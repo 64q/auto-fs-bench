@@ -8,8 +8,12 @@ import base64
 
 import core.errors
 
+
 def modLoad(liste = None):
-    """Chargement des modules"""
+    """
+    Chargement des modules
+    """
+
     # Init
     mod = {}
     # Si liste vide, on charge tous les modules potentiels dans le dossier
@@ -44,8 +48,12 @@ def modLoad(liste = None):
             raise core.errors.InvalidModuleError("Invalid module (language error)")
     return mod
 
+
 def modCheck(mod):
-    """Vérifier si un module contient toutes les fonctions nécessaires"""
+    """
+    Vérifier si un module contient toutes les fonctions nécessaires
+    """
+
     func = ["test", "run", "format", "graph"]
     #funcList = dir(modName)
     error = False
@@ -57,15 +65,18 @@ def modCheck(mod):
             print '   fonction', f, 'manquante'
     return not error
 
+
 def modLaunch(modfunc, func, param="", nb=1):
-    """Lancement d'une instance d'une fonction d'un module"""
+    """
+    Lancement d'une instance d'une fonction d'un module
+    """
+
     # récupérer la fonction voulue
     pfonc = getattr(modfunc, func)
     
     # Sécurité sur le nombre de thread
     if nb < 1:
         nb = 1
-
 
     threads = [None] * nb
     results = dict()
@@ -78,6 +89,7 @@ def modLaunch(modfunc, func, param="", nb=1):
         threads[i].join()
 
     return results
+
 
 def context(pfonc, result, name, param=""):
     val = 0

@@ -1,8 +1,9 @@
 #encoding: utf-8
 
 """
+Module permettant de gérer le monitoring des clients
 
-@author: Olivier
+@author Olivier
 """
 
 import os
@@ -10,12 +11,14 @@ import psutil
 import time
 import sys
 import threading
-import matplotlib
 import base64
+
+import matplotlib
+
 # Pour le support console sans serveur x
 matplotlib.use('Agg')
-from pylab import *
 
+from pylab import *
 
 
 def getSysInfo():
