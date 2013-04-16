@@ -15,10 +15,11 @@ import base64
 
 import matplotlib
 
-from pylab import *
-
 # Pour le support console sans serveur x
 matplotlib.use('Agg')
+
+from pylab import *
+
 
 def getSysInfo():
     """Fonction basique pour récupérer quelques info système"""
