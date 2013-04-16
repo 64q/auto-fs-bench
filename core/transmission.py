@@ -1,10 +1,10 @@
 #encoding: utf-8
 
-'''
-Created on 4 avr. 2013
+"""
+Ce fichier contient des fonctions nécessaires pour transmettre et recevoir les infos par socket
 
 @author: Quentin
-'''
+"""
 
 import sys
 import socket, json, time
@@ -13,7 +13,9 @@ import core.errors
 
 
 def send_to_client(host, port, call, params=None, timeout=1, blocking=1):
-    """Fonction générique pour faire un appel distant"""
+    """
+    Fonction générique pour faire un appel distant
+    """
     
     # requête envoyée au client
     request = {"command": call, "params": params}
@@ -51,6 +53,8 @@ def send_to_client(host, port, call, params=None, timeout=1, blocking=1):
             buffer_recv = sock.recv(4096) # FIXME
     except socket.timeout:
         raise core.errors.ClientTimeoutError("client '%s' timeout" % host)
+    except socket.error as e:
+        raise core.errors.ClientTimeoutError("client '%s' error: %s" % (host, e))
     finally:
         sock.close()
 
@@ -62,6 +66,9 @@ def retreive_response():
     """Récupère la réponse du client et jette une exception si il y a une erreur"""
     
 def check_transmission(rq):
+    """
+    Vérifie que la transmission s'est bien passée, jette une exception s'il y a une erreur
+    """
     if rq["command"] == "error":
         raise core.errors.ClientTransmissionError(rq["returnValue"])
     else:
