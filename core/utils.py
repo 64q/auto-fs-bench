@@ -34,14 +34,12 @@ def csv_write_header(filename, config, module):
     Cette fonction permet d'écrire un petit header dans le fichier csv du module
     """
 
-    # ouverture du fichier en écriture
-    csvfile = open(filename, "wb")
-    
-    # insertion du header de fichier CSV
-    csvwriter = csv.writer(csvfile)
-    csvwriter.writerow(["Resultats du module '%s'" %  module, time.strftime("%Y-%m-%d %H:%M:%S", config.date)])
-    csvwriter.writerow([])
-    csvfile.close()
+    # ouverture du fichier en écriture & insertion du header de fichier CSV
+    with open(filename, "wb") as csvfile:
+        csvwriter = csv.writer(csvfile)
+
+        csvwriter.writerow(["Resultats du module '%s'" %  module, time.strftime("%Y-%m-%d %H:%M:%S", config.date)])
+        csvwriter.writerow([])
 
 
 def csv_write_line(fp, line=[]):
