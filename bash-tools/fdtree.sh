@@ -47,20 +47,32 @@ usage() {
 
 [[ -z ${FDTREE_BINARY} ]] && echo "Can't find fdtree." && exit -1
 
-
+# Création du dossier de test
 TESTDIR="$1/fdtree_${HOSTNAME}_$$"
 mkdir $TESTDIR
-if [ 0 -ne $? ]; then
-    usage
+if [ 0 -ne $? ]; then 
+    echo "Error dir"
+    exit 1
 fi
 
+# Test 1
 fdtree $TESTDIR 500 1 0 0
+rm -rf $TESTDIR/*
 sleep 5
+
+# Test 2
 fdtree $TESTDIR 1 20000 0 0
+rm -rf $TESTDIR/*
 sleep 5
+
+# Test 3
 fdtree $TESTDIR 1 1 20000 1
+rm -rf $TESTDIR/*
 sleep 5
+
+# Test 4
 fdtree $TESTDIR 6 5 6 1
+
 # fdtree $TESTDIR 3 3 2 1 # light test
 
 rm -rf $TESTDIR
