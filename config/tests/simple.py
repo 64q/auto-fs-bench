@@ -17,12 +17,11 @@ name = "simple"
 comment = "Simple benchmark example"
 
 # modules de test à lancer
-modules = ["du"]
+modules = ["cp", "dd", "fdtree", "fileop", "iozone", "rsync"]
 
 # liste des clients cibles du test
 clients = {
-    "localhost": {"path": "./", "times": 3},
-    "raspberry": {"path": "/srv", "times": 3}
+    "localhost": {"path": "/srv", "times": 3}
 }
 
 # spécifications sur le système de fichier testé
