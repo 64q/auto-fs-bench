@@ -223,16 +223,20 @@ class Monitoring(threading.Thread):
         if self.inter < 1:
             self.inter = 1
 
-        # Boucle de traitement
-        while not self.Terminated:
-            self.ok = False
-            begin = time.time()
-            self.val = getSI(self.val)
-            diff = self.inter - (time.time() - begin)
-            if diff < 0:
-                diff = 0
-            self.ok = True
-            time.sleep(diff)
+        try:
+            # Boucle de traitement
+            while not self.Terminated:
+                self.ok = False
+                begin = time.time()
+                self.val = getSI(self.val)
+                diff = self.inter - (time.time() - begin)
+                if diff < 0:
+                    diff = 0
+                self.ok = True
+                time.sleep(diff)
+        except:
+            self.val = 0
+            self.stop()
         return self.val
 
         sys.stdout.write("\n")

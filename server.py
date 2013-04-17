@@ -97,7 +97,9 @@ class ServerCmd(cmd.Cmd):
                         threads.append(thread)
 
                     # on attend que tous les threads se terminent pour continuer
+                    sys.stdout.flush()
                     core.utils.threads_join_all(threads)
+                    sys.stdout.flush()
 
                 print ">> Fin du test de benchmark"
 
@@ -138,11 +140,11 @@ class ServerCmd(cmd.Cmd):
         """Fonction permettant de tester si un benchmark est lançable"""
         
         if test:
-            print "Test de configuration du test '%s'" % test
-
-            server_config = core.manager.build_server_config(test, virtual=True)
-
             try:
+                server_config = core.manager.build_server_config(test, virtual=True)
+                
+                print "Test de configuration du test '%s'" % test
+
                 for client in server_config.clients:
                     # execution de la fonction de test sur chacun des client cible du test
                     response = core.commands.server.test(config.server.clients[client], config.server.send_port, server_config.modules)
