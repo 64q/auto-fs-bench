@@ -26,6 +26,7 @@ def threads_join_all(threads):
 
     for t in threads:
         t.join()
+        print "Thread %s terminé !" % t.name
 
 
 def csv_write_header(filename, config, module):
