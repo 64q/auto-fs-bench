@@ -29,7 +29,7 @@ do_cp()
     FILE_LOG=${WORKING_DIR}/cp_`date "+%Y%m%d_%Hh%Mm%Ss"`_`basename $1`.log
     echo -e "size(MB)\t\tput(s)\tget(s)" > ${FILE_LOG}
 
-    for count in 1 10 100 1000 10000; do
+    for count in 1 10 100 1000 2000; do # Test à 10Go pas possible
     # for count in 2 4 8 16 32 48 64 96 128 160; do # light test
         # work file name
         FILENAME=${ROOT_FILENAME_TEST}_cp
