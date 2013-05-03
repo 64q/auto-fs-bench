@@ -82,7 +82,7 @@ class ServerCmd(cmd.Cmd):
                     test_response = core.commands.server.test(config.server.clients[client], config.server.send_port, server_config.modules)
 
                     if test_response["command"] == "error":
-                        print "- Erreur sur client '%s' (error: %s)" % (client, test_response["returnValue"])
+                        raise Exception("error: client '%s' (error: %s)" % (client, test_response["returnValue"]))
 
                 print ">> Debut du test module par module"
 
