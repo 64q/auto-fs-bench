@@ -139,7 +139,7 @@ def graph(val=dict(), prefix = ''):
     iorf = [int(i/1024/1024) for i in ior]
     iowf = [int(u/1024/1024) for u in iow]
 
-    lior, liow = ax2.plot(dx, iorf, 'g-', dx, iowf, 'r-')
+    lior, liow = ax2.plot(dx, iorf, 'b-', dx, iowf, 'r-')
     ax2.grid(True)
     ax2.axhline(0, color='black', lw=2)
     # Agencement du temps
@@ -168,7 +168,7 @@ def graph(val=dict(), prefix = ''):
     netsf = [int(i/1024/1024) for i in nets]
     netrf = [int(i/1024/1024) for i in netr]
 
-    lnets, lnetr = ax3.plot(dx, netsf, 'r-', dx, netrf, 'g-')
+    lnets, lnetr = ax3.plot(dx, netsf, 'r-', dx, netrf, 'b-')
     
     # Legend
     # fig.legend((lcpu, lmem,lswp, lior, liow, lnets, lnetr), \
