@@ -27,7 +27,7 @@ def test(workdir="./", var=""):
         p = subprocess.Popen(["make"], cwd=workdir, stdout=subprocess.PIPE)
         out, err = p.communicate()
 
-        # Vérifier si cça a fonctionné
+        # Vérifier si la compilation a fonctionné
         if not os.path.isfile("bash-tools/pjd-fstest-rozofs/fstest"):
             text += "Compilation FAIL : bash-tools/pjd-fstest-rozofs/fstest"
             valid = False

@@ -17,11 +17,11 @@ name = "olivier"
 comment = "bash scripts test"
 
 # modules de test à lancer
-modules = ["cp", "dd", "fdtree", "fileop", "iozone"] #"cp", "dd", "fdtree", "fileop", "iozone", "rsync"
+modules = ["pjdtest"] #"cp", "dd", "fdtree", "fileop", "iozone", "rsync"
 
 # liste des clients cibles du test
 clients = {
-    "nantarena": {"path": "/srv", "times": 1}
+    "servoliv": {"path": "/srv", "times": 1}
 }
 
 # spécifications sur le système de fichier testé
