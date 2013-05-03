@@ -10,6 +10,7 @@ import sys
 import socket, json, time
 
 import core.errors
+import core.commands.server
 
 
 def send_to_client(host, port, call, params=None, timeout=1, blocking=1):
@@ -30,6 +31,8 @@ def send_to_client(host, port, call, params=None, timeout=1, blocking=1):
 
     done = 0
 
+    time_spent = 0
+
     try:
         sock.connect((host, port))
         sock.sendall(json.dumps(request) + "\n")
@@ -49,10 +52,21 @@ def send_to_client(host, port, call, params=None, timeout=1, blocking=1):
                 except socket.error:
                     # on ralenti légèrement la vitesse d'interrogation
                     time.sleep(1)
-                except socket.timeout:
-                    # déconnexion du client durant les traitements
-                    raise core.errors.ClientTimeoutError("client '%s' timeout" % host)
-                    sock.close()
+                    
+                    # traitement du heartbeat toute les minutes
+                    time_spent += 1
+
+                    if time_spent == 60:
+                        result = core.commands.server.heartbeat(host, port)
+
+                        print "Envoi heartbeat ..."
+
+                        if result["command"] != "heartbeat":
+                            raise core.errors.ClientTimeoutError("client '%s' timeout" % host)
+
+                        print "Heartbeat OK (%s)" % result["returnValue"]
+
+                        time_spent = 0
         else:
             buffer_recv = sock.recv(4096) # FIXME
     except socket.timeout:
@@ -62,7 +76,10 @@ def send_to_client(host, port, call, params=None, timeout=1, blocking=1):
     finally:
         sock.close()
 
-    response = json.loads(buffer_recv)
+    try:
+        response = json.loads(buffer_recv)
+    except ValueError as e:
+        raise core.errors.ClientTransmissionError("client '%s' transmission invalide" % host)
 
     return response
 
