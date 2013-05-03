@@ -29,7 +29,7 @@ def test(workdir="./", var=""):
 
         # Vérifier si cça a fonctionné
         if not os.path.isfile("bash-tools/pjd-fstest-rozofs/fstest"):
-            text += "bash-tools/pjd-fstest-rozofs/fstest"
+            text += "Compilation FAIL : bash-tools/pjd-fstest-rozofs/fstest"
             valid = False
 
     if not valid:
