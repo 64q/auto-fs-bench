@@ -22,10 +22,16 @@ def test(workdir="./", var=""):
         valid = False
 
     if not os.path.isfile("bash-tools/pjd-fstest-rozofs/fstest"):
-        
-        text += "bash-tools/pjd-fstest-rozofs/fstest"
-        valid = False
-    
+        # Compilation du programme
+        workdir = os.getcwd() + "/bash-tools/pjd-fstest-rozofs/"
+        p = subprocess.Popen(["make"], cwd=workdir, stdout=subprocess.PIPE)
+        out, err = p.communicate()
+
+        # Vérifier si cça a fonctionné
+        if not os.path.isfile("bash-tools/pjd-fstest-rozofs/fstest"):
+            text += "bash-tools/pjd-fstest-rozofs/fstest"
+            valid = False
+
     if not valid:
         raise core.errors.InvalidModuleError(text)
     return valid
