@@ -75,6 +75,15 @@ class ServerCmd(cmd.Cmd):
                 # affichage header kikoo
                 core.utils.print_title("Test de benchmark '%s'" % test, ruler='=')
 
+                print ">> Test des clients en cours"
+
+                # test des clients
+                for client in server_config.clients:
+                    test_response = core.commands.server.test(config.server.clients[client], config.server.send_port, server_config.modules)
+
+                    if test_response["command"] == "error":
+                        print "- Erreur sur client '%s' (error: %s)" % (client, test_response["returnValue"])
+
                 print ">> Debut du test module par module"
 
                 for module in server_config.modules:
@@ -99,6 +108,24 @@ class ServerCmd(cmd.Cmd):
                     # on attend que tous les threads se terminent pour continuer
                     sys.stdout.flush()
                     core.utils.threads_join_all(threads)
+
+                    # enregistrement des résultats
+                    for client, result in clients_results[module].iteritems():
+                        try:
+                            # génération des chemins de sauvegarde
+                            moduledir = core.manager.generate_moduledir(server_config, module)
+                            filename = core.manager.generate_filename(server_config, module)
+
+                            # on vérifie que le résultat n'est pas une erreur
+                            core.transmission.check_transmission(result)
+
+                            # sauvegarde des différents fichiers
+                            core.tests.save_files(moduledir, filename, client, result)
+                        except Exception as e:
+                            # enregistrement dans le fichier de résumé
+                            with open(filename, "ab") as csvfile:
+                                core.utils.csv_write_line(csvfile, [client, e.__str__()])
+
                     sys.stdout.flush()
 
                 print ">> Fin du test de benchmark"
@@ -109,26 +136,15 @@ class ServerCmd(cmd.Cmd):
 
                     for client, result in module_results.iteritems():
                         try:
-                            # génération des chemins de sauvegarde
-                            moduledir = core.manager.generate_moduledir(server_config, module)
-                            filename = core.manager.generate_filename(server_config, module)
-
                             # on vérifie que le résultat n'est pas une erreur
                             core.transmission.check_transmission(result)
-
-                            # sauvegarde des différents ichiers
-                            core.tests.save_files(moduledir, filename, client, result)
 
                             # test passé avec succès, on affiche
                             print "  %s\t: resultat du test OK" % client
                         except Exception as e:
                             # affichage de l'erreur dans la console
                             print "  %s\t: erreur de transmission (error: %s)" % (client, e)
-
-                            # enregistrement dans le fichier de résumé
-                            with open(filename, "ab") as csvfile:
-                                core.utils.csv_write_line(csvfile, [client, e.__str__()])
-            except ImportError as e:
+            except Exception as e:
                 print "error: %s" % e
         else:
             print "error: no test given"
