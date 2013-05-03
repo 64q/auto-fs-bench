@@ -96,11 +96,15 @@ def graph(val=dict(), prefix = ''):
     # Création de la liste des temps
     dx = [int(round(i-val["time"][0])) for i in val["time"]]
 
+    size = floor(dx[len(dx)-1] / 60.0)
+    if size < 15:
+        size = 15
+
     # Création de la figure et des axes associés
-    fig = figure(figsize=(20,20))
-    ax1 = fig.add_axes([0.05, 0.57, 0.9, 0.4])
-    ax2 = fig.add_axes([0.05, 0.03, 0.9, 0.4])
-    ax3 = ax2.twinx()
+    fig = figure(figsize=(size,20))
+    ax1 = fig.add_axes([0.05, 0.69, 0.9, 0.28])
+    ax2 = fig.add_axes([0.05, 0.36, 0.9, 0.28])
+    ax3 = fig.add_axes([0.05, 0.03, 0.9, 0.28])
 
     # Graphique pour le CPU, la RAM et le SWAP
     ax1.set_ylabel('cpu - mem - swap (in %)')
@@ -116,7 +120,7 @@ def graph(val=dict(), prefix = ''):
     # GRafique pour le disque
     ax2.set_ylabel('Disk read - write (in Ko/sec)')
     ax2.set_xlabel('time in seconde')
-    ax2.set_title('Disk and Network Usage')
+    ax2.set_title('Disk Usage')
 
     ior = []
     iow = []
@@ -135,7 +139,7 @@ def graph(val=dict(), prefix = ''):
     iorf = [int(i/1024/1024) for i in ior]
     iowf = [int(u/1024/1024) for u in iow]
 
-    lior, liow = ax2.plot(dx, iorf, 'g-', dx, iowf, 'r-')
+    lior, liow = ax2.plot(dx, iorf, 'b-', dx, iowf, 'r-')
     ax2.grid(True)
     ax2.axhline(0, color='black', lw=2)
     # Agencement du temps
@@ -143,7 +147,9 @@ def graph(val=dict(), prefix = ''):
 
 
     # Graphique pour le réseau
+    ax3.set_title('Network Usage')
     ax3.set_ylabel('Network incoming - outgoing (in Ko/sec)')
+    ax3.set_xlabel('time in seconde')
 
 
     nets = []
@@ -162,12 +168,23 @@ def graph(val=dict(), prefix = ''):
     netsf = [int(i/1024/1024) for i in nets]
     netrf = [int(i/1024/1024) for i in netr]
 
-    lnets, lnetr = ax3.plot(dx, netsf, 'm-', dx, netrf, 'b-')
+    lnets, lnetr = ax3.plot(dx, netsf, 'r-', dx, netrf, 'b-')
     
     # Legend
-    fig.legend((lcpu, lmem,lswp, lior, liow, lnets, lnetr), \
-        ('CPU', 'Memory', 'Swap', 'Disk read', 'Disk write', 'Network out', 'Network in'), 'right')
+    # fig.legend((lcpu, lmem,lswp, lior, liow, lnets, lnetr), \
+    #     ('CPU', 'Memory', 'Swap', 'Disk read', 'Disk write', 'Network out', 'Network in'), 'right')
 
+    fig.legend((lcpu, lmem,lswp), \
+        ('CPU', 'Memory', 'Swap'), 'upper right')
+
+    fig.legend((lior, liow), \
+        ('Disk read', 'Disk write'), 'center right')
+
+    fig.legend((lnets, lnetr), \
+        ('Network out', 'Network in'), 'lower right')
+
+    ax3.grid(True)
+    ax3.axhline(0, color='black', lw=2)
     # Agencement du temps
     ax3.set_xlim(0,dx[len(dx)-1])
 
