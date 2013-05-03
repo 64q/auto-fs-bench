@@ -49,6 +49,10 @@ def send_to_client(host, port, call, params=None, timeout=1, blocking=1):
                 except socket.error:
                     # on ralenti légèrement la vitesse d'interrogation
                     time.sleep(1)
+                except socket.timeout:
+                    # déconnexion du client durant les traitements
+                    raise core.errors.ClientTimeoutError("client '%s' timeout" % host)
+                    sock.close()
         else:
             buffer_recv = sock.recv(4096) # FIXME
     except socket.timeout:
