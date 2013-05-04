@@ -1,37 +1,76 @@
 # -*- coding: utf-8 -*-
-"""squelette de module de benchmark"""
+"""
+squelette de module de benchmark
 
-import os
+Ce fichier donne la structure attendue pour un module
+de benchmark. Il y a aussi quelques exemples de commandes
+possibles.
 
-def test(workdir="./", var=""):
-    print("sketest")
+"""
+
+import os, subprocess, stat
+import core.errors
+
+def test():
+    """
+    Fonction pour vérifier que le script va pouvoir s'exécuter correctement
+    sur le client.
+
+    Si tout est OK, la fonction doit renvoyer TRUE.
+    Dans le cas contraire il faut lancer une exception :
+    raise core.errors.InvalidModuleError(TEXTE)
+
+    Le répertoire courant est celui de lancement du programme :
+        dossier "auto-fs-bench"
+    """
+
     return True
 
 def run(workdir="./", var=""):
-    fichier = open(workdir+"res", "w")
-    fichier.write('-file-\n'+workdir) 
-    fichier.close()
-    # os.remove('res')
-    print("skerun")
-    return "skerun"
+    """
+    Fonction d'exécution du test de benchmark.
 
-def format(workdir="./", var=""):
-    print("skeformat")
-    return "skeformat"
+    workdir : correspond au dossier où vous devez travailler. /!\ CE N'EST  PAS
+        LE REPERTOIRE COURANT.
+    var     : chemin du dossier monté à tester.
 
-def graph(workdir="./", var=""):
-    print("skegraph")
-    return "skegraph"
+    Le répertoire courant est celui de lancement du programme :
+        dossier "auto-fs-bench"
+
+    """
+
+    return "-"
+
 
 if __name__ == "__main__":
+    print test()
     os.system("pause")
 
 
+"""
+OUTILS :
 
-# Pour appeler un script bash :
-# subprocess.Popen("./", bufsize=0, executable=None, stdin=None, stdout=None, stderr=None, preexec_fn=None, close_fds=False, shell=False, cwd=None, env=None, universal_newlines=False, startupinfo=None, creationflags=0)
-# p = subprocess.Popen(["/bin/bash", pos+"/test.sh", workdir, var], cwd="/tmp", stdout=subprocess.PIPE)
-# out, err = p.communicate()
-# sortie=os.popen("bash-tools/dd.sh "+workdir+" "+var, "r").read()
-# out, err = subprocess.Popen(["/bin/bash", pos+"/bash-tools/cp.sh", var], cwd=workdir, stdout=subprocess.PIPE).communicate()
-# ee =  os.environ.copy().get("PATH",'')+":"+os.getcwd()+"/bash-tools"
+Pour utiliser un script bash, utiliser la fonction subprocess.Popen :
+    subprocess.Popen("./", bufsize=0, executable=None, stdin=None, stdout=None, stderr=None, preexec_fn=None, close_fds=False, shell=False, cwd=None, env=None, universal_newlines=False, startupinfo=None, creationflags=0)
+
+Exemple :
+    p = subprocess.Popen(["/bin/bash", "test.sh", workdir, var], cwd=workdir, stdout=subprocess.PIPE)
+    out, err = p.communicate()
+
+    cwd     : root le script dans le dossier de travaille
+    stdout  : permet de récupérer la sortie standart et d'erreur.
+
+Pour ajouter des informations dans le PATH du thread qui exécute le script bash (subprocess) :
+    # Récupérer le dossier de travail courant
+    pos = os.getcwd()
+
+    # récupérer la variable d'environnement courrante
+    penv = os.environ
+
+    # Ajout des nouveaux chemins
+    penv["PATH"] =  penv.copy().get("PATH",'')+":"+os.getcwd()+":"+os.getcwd()+"/bash-tools"
+
+    # Appel de subprocess.Popen
+    p = subprocess.Popen(["/bin/bash", pos+"/bash-tools/fdtree.sh", var], cwd=workdir, stdout=subprocess.PIPE, env=penv)
+
+"""

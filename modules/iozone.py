@@ -9,7 +9,7 @@ Ce module utilise le script bash iozone
 import os, subprocess
 import core.errors
 
-def test(workdir="./", var=""):
+def test():
     valid = True
     text = ""
     if subprocess.Popen(["which", "iozone"], stdout=subprocess.PIPE).communicate()[0] == "":
@@ -36,13 +36,6 @@ def run(workdir="./", var=""):
     
     return "-"
 
-def format(workdir="./", var=""):
-    return ""
-
-def graph(workdir="./", var=""):
-    return ""
-
 if __name__ == "__main__":
-    # run("/tmp", "/srv")
     print test()
     os.system("pause")
