@@ -39,9 +39,9 @@ class ServerArgumentParser(argparse.ArgumentParser):
         # lancement en sous shell
         self.add_argument("-s", "--shell", action="store_true", dest="shell", 
             help="lance la ligne de commande en mode interactif, ignore l'argument bench_test")
-        # lancement en mode verbeux
-        self.add_argument("-v", "--verbose", action="count", dest="verbose", 
-            help="parametrage du mode verbose")
+        # # paramétrage version fs
+        # self.add_argument("-v", "--version", dest="version",
+        #     help="parametrage de la version du fs")
         # port d'envoi du serveur aux clients
         self.add_argument("-p", "--port", default=config.server.send_port, type=int, dest="port", 
             help="port d'envoi du serveur (default: %i)" % config.server.send_port)
@@ -61,28 +61,43 @@ class ServerCmd(cmd.Cmd):
         pass
     
     def default(self, line):
+        """
+        Fonction appellée par défaut si commande inconnue
+        """
+
         print "error: unrecognized command '%s'." % line
     
     def do_run(self, test):
-        """Fonction pour lancer un benchmark sur la plateforme"""
+        """
+        Fonction pour lancer un benchmark sur la plateforme
+        """
         
         if test:
             try:
                 # build de la configuration serveur
-                server_config = core.manager.build_server_config(test)
+                server_config = core.manager.build_server_config(test, virtual=True)
                 clients_results = dict()
 
                 # affichage header kikoo
-                core.utils.print_title("Test de benchmark '%s'" % test, ruler='=')
+                core.utils.print_title("Benchmark '%s'" % test, ruler='=')
 
-                print ">> Test des clients en cours"
+                print ">> Lancement des tests des clients"
+
+                test_results = True
 
                 # test des clients
                 for client in server_config.clients:
                     test_response = core.commands.server.test(config.server.clients[client], config.server.send_port, server_config.modules)
 
                     if test_response["command"] == "error":
-                        raise Exception("error: client '%s' (error: %s)" % (client, test_response["returnValue"]))
+                        core.utils.print_row(client, test_response["returnValue"])
+                        test_results = False
+
+                if not test_results:
+                    raise core.errors.TestsError("test() function failed on some clients")
+
+                # cette fois les clients sont OK, on créé réellement le test
+                server_config = core.manager.build_server_config(test)
 
                 print ">> Debut du test module par module"
 
@@ -109,7 +124,7 @@ class ServerCmd(cmd.Cmd):
                     sys.stdout.flush()
                     core.utils.threads_join_all(threads)
 
-                    # enregistrement des résultats
+                    # enregistrement des résultats du module terminé
                     for client, result in clients_results[module].iteritems():
                         try:
                             # génération des chemins de sauvegarde
@@ -121,8 +136,8 @@ class ServerCmd(cmd.Cmd):
 
                             # sauvegarde des différents fichiers
                             core.tests.save_files(moduledir, filename, client, result)
-                        except Exception as e:
-                            # enregistrement dans le fichier de résumé
+                        except core.errors.ClientTransmissionError as e:
+                            # enregistrement dans le fichier de résumé de l'erreur rencontrée
                             with open(filename, "ab") as csvfile:
                                 core.utils.csv_write_line(csvfile, [client, e.__str__()])
 
@@ -134,16 +149,19 @@ class ServerCmd(cmd.Cmd):
                 for module, module_results in clients_results.iteritems():
                     core.utils.print_title("Resultats du module '%s'" % module)
 
+                    core.utils.print_row("Client", "Etat", "Message"); print
+
                     for client, result in module_results.iteritems():
                         try:
                             # on vérifie que le résultat n'est pas une erreur
                             core.transmission.check_transmission(result)
 
                             # test passé avec succès, on affiche
-                            print "  %s\t: resultat du test OK" % client
+                            core.utils.print_row(client, "PASSED")
                         except Exception as e:
                             # affichage de l'erreur dans la console
-                            print "  %s\t: erreur de transmission (error: %s)" % (client, e)
+                            core.utils.print_row(client, "FAILED", e)
+            # on capture toutes les exceptions qui pourraient être lancées pendant les traitements
             except Exception as e:
                 print "error: %s" % e
         else:
@@ -159,16 +177,18 @@ class ServerCmd(cmd.Cmd):
             try:
                 server_config = core.manager.build_server_config(test, virtual=True)
                 
-                print "Test de configuration du test '%s'" % test
+                core.utils.print_title("Test de configuration du test '%s'" % test, ruler="=")
+
+                core.utils.print_row("Client", "Etat", msg="Message"); print
 
                 for client in server_config.clients:
                     # execution de la fonction de test sur chacun des client cible du test
                     response = core.commands.server.test(config.server.clients[client], config.server.send_port, server_config.modules)
 
                     if response["command"] == "test":
-                        print "  %s\t: %s" % (client, "test operationnel")
+                        core.utils.print_row(client, "PASSED");
                     else:
-                        print "  %s\t: %s" % (client, "erreur lors du test (error: %s)" % response["returnValue"])
+                        core.utils.print_row(client, "FAILED", msg=response["returnValue"])
             except ImportError as e:
                 print "error: %s" % e
         else:
@@ -182,18 +202,17 @@ class ServerCmd(cmd.Cmd):
         
         # listage des clients 
         if line == "clients":
-            print "Liste des clients"
+            core.utils.print_title("Liste des clients", ruler="=")
+
+            core.utils.print_row("Client", "Etat", "Message"); print
 
             for client, ip in config.server.clients.iteritems():
                 result = core.commands.server.heartbeat(ip, config.server.send_port)
                 
                 if result["command"] == "heartbeat":
-                    print "  %s\t: %s" % (client, "Online")
+                    core.utils.print_row(client, "Online")
                 else:
-                    print "  %s\t: %s" % (client, "Offline (error: %s)" % result["returnValue"])
-        # listage des tests disponibles
-        elif line == "tests":
-            print "Liste des tests de benchmark"
+                    core.utils.print_row(client, "Offline",result["returnValue"])
         # type de listage inconnu
         else:
             print "error: unrecognized type of listing"
@@ -243,12 +262,9 @@ def main():
     
     print __description__
 
-    # limitation verbosity a 3
-    if args.verbose:
-        if args.verbose > 3:
-            args.verbose = 3
-        
-        print ">> Lancement en mode verbeux (niveau: %i)" % args.verbose
+    # # ajout de la version du fs en override si présent
+    # if not args.version is None:
+    #     setattr(config.server, "fsversion", args.version)
     
     cmd = ServerCmd()
 
