@@ -3,7 +3,7 @@
 """
 Fichier permettant de manipuler le client auto-fs-bench
 
-A appeller avec `python server.py [options] server_addr'
+A appeller avec `python server.py [options]'
 
 @author: Quentin
 """
