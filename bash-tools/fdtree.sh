@@ -52,7 +52,7 @@ fdtree() {
         echo "Type autre erreur :" $error >> $flog
 
 
-    # mkdir erreur
+    # mkdir
         # timer
         num=`wc -l $flog | cut -d' ' -f1`
         sed -i '/^mkdir: cannot create directory .*: Timer expired$/d' $flog

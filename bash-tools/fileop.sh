@@ -37,4 +37,8 @@ ${FSOP_BINARY} -l 1 -u 10 -i 1 -s 1M -d $TESTDIR 2>&1 | tee $flog
 
 rm -rf $TESTDIR
 
+# Clean the log file
+sed -i "s/\ \ */\ /g" $flog
+mv $flog ${flog}.csv
+
 exit 0

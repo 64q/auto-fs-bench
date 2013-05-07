@@ -22,6 +22,8 @@ WORKING_DIR=$PWD
 LOCAL_PJDTESTS=`which fstest`
 LOCAL_DIR=`dirname ${LOCAL_PJDTESTS}`
 
+[[ -z ${LOCAL_PJDTESTS} ]] && echo "Can't find pjdtest." && exit -1
+
 #$1 mount point
 pjdtest() {
 
