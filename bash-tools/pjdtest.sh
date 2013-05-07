@@ -20,6 +20,9 @@
 
 WORKING_DIR=$PWD
 LOCAL_PJDTESTS=`which fstest`
+LOCAL_DIR=`dirname ${LOCAL_PJDTESTS}`
+
+[[ -z ${LOCAL_PJDTESTS} ]] && echo "Can't find pjdtest." && exit -1
 
 #$1 mount point
 pjdtest() {
@@ -31,7 +34,7 @@ pjdtest() {
     cd $1
 
     # EXECUTE FILEOP
-    prove -r ${LOCAL_PJDTESTS} 2>&1 | tee -a $flog
+    prove -r ${LOCAL_DIR} 2>&1 | tee -a $flog
 
     # Return to current directory
     cd ${WORKING_DIR}

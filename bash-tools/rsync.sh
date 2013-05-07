@@ -56,6 +56,11 @@ echo "End rm: $(date +%d-%m-%Y--%H:%M:%S)" >> $flog
 # Clean the log file (-v of rsync)
 sed -i '/LEVEL0/d' $flog
 
+num=`wc -l $flog | cut -d' ' -f1`
+sed -i '/*** Skipping any contents from this failed directory ***/d' $flog
+echo "Skipping any contents from this failed directory :" $(($num - `wc -l $flog | cut -d' ' -f1`)) >> $flog
+
+
 rm -rf $tmpd
 rm -rf $TESTDIR
 

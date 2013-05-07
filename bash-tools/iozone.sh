@@ -46,6 +46,8 @@ ${IOZONE_BINARY} -ac $1 -f $ftest 2>&1 | tee $flog
 # We use stdout to save iozone output
 # ${IOZONE_BINARY} -ac $1 -g 4049 -f $ftest 2>&1 | tee $flog # light test
 
-
+# Clean the log file
+sed -i "s/\ \ */\ /g" $flog
+mv $flog ${flog}.csv
 
 exit 0
