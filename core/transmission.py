@@ -59,17 +59,15 @@ def send_to_client(host, port, call, params=None, timeout=1, blocking=1):
                     if time_spent == 60:
                         result = core.commands.server.heartbeat(host, port)
 
-                        print "Envoi heartbeat ..."
-
+                        # si on n'a pas de résultats au retour du heartbeat, on arrête le traitement
+                        # de la fonction en jettant une exception
                         if result["command"] != "heartbeat":
                             raise core.errors.ClientTimeoutError("client '%s' timeout" % host)
-
-                        print "Heartbeat OK (%s)" % result["returnValue"]
 
                         time_spent = 0
         else:
             buffer_recv = sock.recv(4096) # FIXME
-    except socket.timeout:
+    except socket.timeout as e:
         raise core.errors.ClientTimeoutError("client '%s' timeout" % host)
     except socket.error as e:
         raise core.errors.ClientTimeoutError("client '%s' error: %s" % (host, e))
@@ -78,18 +76,22 @@ def send_to_client(host, port, call, params=None, timeout=1, blocking=1):
 
     try:
         response = json.loads(buffer_recv)
+    # la chaine JSON recue est invalide, il faut le signaler !
     except ValueError as e:
         raise core.errors.ClientTransmissionError("client '%s' transmission invalide" % host)
 
     return response
 
-def retreive_response():
-    """Récupère la réponse du client et jette une exception si il y a une erreur"""
     
 def check_transmission(rq):
     """
     Vérifie que la transmission s'est bien passée, jette une exception s'il y a une erreur
+
+    En clair, si le message est de type 'error', une exception est lancée, sinon True est retourné
+
+    On va comme ça pouvoir faire remonter l'exception du client jusqu'à la console du serveur
     """
+
     if rq["command"] == "error":
         raise core.errors.ClientTransmissionError(rq["returnValue"])
     else:
