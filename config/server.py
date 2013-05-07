@@ -30,7 +30,8 @@ clients = dict(
     rozo9 = "1.1.100.91",
     rozo10 = "1.1.100.101",
     rozo11 = "1.1.100.111",
-    rozo12 = "1.1.100.121"
+    rozo12 = "1.1.100.121",
+    portable = "192.168.0.128"
 )
 
 # port d'envoi du serveur
