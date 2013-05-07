@@ -20,6 +20,7 @@
 
 WORKING_DIR=$PWD
 LOCAL_PJDTESTS=`which fstest`
+LOCAL_DIR=`dirname ${LOCAL_PJDTESTS}`
 
 #$1 mount point
 pjdtest() {
