@@ -1,15 +1,14 @@
 #encoding: utf-8
 
 """
-Created on 4 avr. 2013
+Ce fichier contient un ensemble de fonctions utilitaires pour manipuler des threads, du csv et bien
+plus encore.
 
 @author: Quentin
 """
 
 import sys, socket, json, csv, time
 import threading, importlib
-
-import server
 
 
 def threads_create_and_start(fn, params=()):
@@ -70,10 +69,19 @@ def load_config_test(test):
     return importlib.import_module('config.tests.' + test)
 
 
-def print_title(content, ruler='-'):
-    print "%s" % ruler * 70
+def print_title(content, ruler='-', underline=False):
+    """
+    Cette fonction permet de faire un peu de formattage en console
+    """
+
+    if not underline:
+        print "%s" % ruler * 70
+
     print content
     print "%s" % ruler * 70
+
+def print_row(host, status, msg=""):
+    print " %-30s %-15s %-15s" % (host, status, msg)
 
 class LoadingBarThread(threading.Thread):
     def __init__(self, nom = ''):
