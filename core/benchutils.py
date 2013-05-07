@@ -54,7 +54,7 @@ def modCheck(mod):
     Vérifier si un module contient toutes les fonctions nécessaires
     """
 
-    func = ["test", "run", "format", "graph"]
+    func = ["test", "run"]
     #funcList = dir(modName)
     error = False
     for f in func:

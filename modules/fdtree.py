@@ -9,7 +9,7 @@ Ce module utilise les scripts bash fdtree.sh et fdtree.bash
 import os, subprocess, stat
 import core.errors
 
-def test(workdir="./", var=""):
+def test():
     valid = True
     text = ""
 
@@ -44,13 +44,7 @@ def run(workdir="./", var=""):
     
     return "-"
 
-def format(workdir="./", var=""):
-    return ""
-
-def graph(workdir="./", var=""):
-    return ""
 
 if __name__ == "__main__":
-    # run("/tmp", "/srv")
     print test()
     os.system("pause")
