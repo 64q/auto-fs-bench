@@ -17,6 +17,10 @@ def test():
         text += " - gcc missing"
         valid = False
 
+    if subprocess.Popen(["which", "make"], stdout=subprocess.PIPE).communicate()[0] == "":
+        text += " - make missing"
+        valid = False
+
     if subprocess.Popen(["which", "prove"], stdout=subprocess.PIPE).communicate()[0] == "":
         text += " - prove missing"
         valid = False
