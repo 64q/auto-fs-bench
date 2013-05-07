@@ -3,7 +3,7 @@
 """
 Module permettant de gérer le monitoring des clients
 
-@author Olivier
+@author: Olivier
 """
 
 import os

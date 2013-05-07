@@ -1,5 +1,11 @@
-# -*- coding: utf-8 -*-
-"""module de gestion des outils de benchmark"""
+#encoding: utf-8
+
+"""
+Module de gestion des outils de benchmark, il s'occupe de charger les modules de benchmark et de
+vérifier qu'ils sont correctement installés (avec les dépendances)
+
+@author: Olivier
+"""
  
 import os
 import threading
