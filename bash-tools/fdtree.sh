@@ -36,6 +36,47 @@ fi
 fdtree() {
     flog=${WORKING_DIR}/fdtree_`date "+%Y%m%d_%Hh%Mm%Ss"`_`basename $1`_$2_$3_$4_$5.log
     ${FDTREE_BINARY} -l $2 -d $3 -f $4 -s $5 -o $1 2>&1 | tee -a $flog
+
+    # Clean errors in the file
+    # rm
+        # timer
+        num=`wc -l $flog | cut -d' ' -f1`
+        sed -i '/^rm: cannot remove .*: Timer expired$/d' $flog
+        echo "rm - Timer expired :" $(($num - `wc -l $flog | cut -d' ' -f1`)) >> $flog
+
+        # Autre 
+        error=`grep -E "^rm: cannot remove " $flog | cut -d':' -f3 | sort -u`
+        num=`wc -l $flog | cut -d' ' -f1`
+        sed -i '/^rm: cannot remove /d' $flog
+        echo "rm - autre erreur :" $(($num - `wc -l $flog | cut -d' ' -f1`)) >> $flog
+        echo "Type autre erreur :" $error >> $flog
+
+
+    # mkdir erreur
+        # timer
+        num=`wc -l $flog | cut -d' ' -f1`
+        sed -i '/^mkdir: cannot create directory .*: Timer expired$/d' $flog
+        echo "mkdir - Timer expired :" $(($num - `wc -l $flog | cut -d' ' -f1`)) >> $flog
+
+        # Autre :
+        error=`grep -E "^mkdir: cannot create directory " $flog | cut -d':' -f3 | sort -u`
+        num=`wc -l $flog | cut -d' ' -f1`
+        sed -i '/^mkdir: cannot create directory /d' $flog
+        echo "mkdir - : autre erreur :" $(($num - `wc -l $flog | cut -d' ' -f1`)) >> $flog
+        echo "Type autre erreur :" $error >> $flog
+
+    # rmdir
+        # Timer
+        num=`wc -l $flog | cut -d' ' -f1`
+        sed -i '/^rmdir: failed to remove .*: Timer expired$/d' $flog
+        echo "rmdir - Timer expired :" $(($num - `wc -l $flog | cut -d' ' -f1`)) >> $flog
+
+        # Autre
+        error=`grep -E "^rmdir: failed to remove " $flog | cut -d':' -f3 | sort -u`
+        num=`wc -l $flog | cut -d' ' -f1`
+        sed -i '/^rmdir: failed to remove /d' $flog
+        echo "rmdir - autre erreur :" $(($num - `wc -l $flog | cut -d' ' -f1`)) >> $flog
+        echo "Type autre erreur :" $error >> $flog
 }
 
 usage() {
