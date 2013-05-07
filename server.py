@@ -44,7 +44,7 @@ class ServerArgumentParser(argparse.ArgumentParser):
             help="parametrage du mode verbose")
         # port d'envoi du serveur aux clients
         self.add_argument("-p", "--port", default=config.server.send_port, type=int, dest="port", 
-            help="port d'envoi du serveur (default: 7979)")
+            help="port d'envoi du serveur (default: %i)" % config.server.send_port)
 
 
 class ServerCmd(cmd.Cmd):
@@ -251,6 +251,13 @@ def main():
         print ">> Lancement en mode verbeux (niveau: %i)" % args.verbose
     
     cmd = ServerCmd()
+
+    # vérification de la présence du dossier de données et création
+    if not os.path.exists(config.server.save_dir):
+        try:
+            os.mkdir(config.server.save_dir)
+        except e:
+            print "error: cannot create data dir"; return 1
 
     # lancement en mode interactif (Shell)
     if args.shell:
