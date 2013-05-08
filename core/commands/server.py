@@ -32,13 +32,13 @@ def test(host, port, modules=[]):
     return response
 
 
-def heartbeat(host, port):
+def heartbeat(host, port, timeout=0.1):
     """Fonction permettant d'envoyer des msgs de type heartbeat"""
 
     response = dict()
 
     try:
-        response = core.transmission.send_to_client(host, port, "heartbeat", timeout=0.1)
+        response = core.transmission.send_to_client(host, port, "heartbeat", timeout=timeout)
     except core.errors.ClientTimeoutError as e:
         response = __error__(e.__str__())
 

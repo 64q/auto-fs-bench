@@ -57,7 +57,8 @@ def send_to_client(host, port, call, params=None, timeout=1, blocking=1):
                     time_spent += 1
 
                     if time_spent == 60:
-                        result = core.commands.server.heartbeat(host, port)
+                        # envoi du timeout avec 5s de temps de latence toléré
+                        result = core.commands.server.heartbeat(host, port, timeout=5)
 
                         # si on n'a pas de résultats au retour du heartbeat, on arrête le traitement
                         # de la fonction en jettant une exception
