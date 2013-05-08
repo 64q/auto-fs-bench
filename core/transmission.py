@@ -16,6 +16,14 @@ import core.commands.server
 def send_to_client(host, port, call, params=None, timeout=1, blocking=1):
     """
     Fonction générique pour faire un appel distant
+
+    Arguments:
+    host -- hôte cible de l'envoi de la requête
+    port -- port d'envoi
+    call -- fonction à appeller de manière distante
+    params -- paramètres à transmettre
+    timeout -- timeout de réponse du client
+    blocking -- mode bloquant/non-bloquant de réception
     """
     
     # requête envoyée au client
@@ -79,7 +87,7 @@ def send_to_client(host, port, call, params=None, timeout=1, blocking=1):
         response = json.loads(buffer_recv)
     # la chaine JSON recue est invalide, il faut le signaler !
     except ValueError as e:
-        raise core.errors.ClientTransmissionError("client '%s' transmission invalide" % host)
+        raise core.errors.ClientTransmissionError("client '%s' a une transmission invalide" % host)
 
     return response
 
@@ -91,6 +99,9 @@ def check_transmission(rq):
     En clair, si le message est de type 'error', une exception est lancée, sinon True est retourné
 
     On va comme ça pouvoir faire remonter l'exception du client jusqu'à la console du serveur
+
+    Arguments:
+    rq -- requête d'erreur
     """
 
     if rq["command"] == "error":

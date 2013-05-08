@@ -1,10 +1,10 @@
 #encoding: utf-8
 
-'''
-Created on 27 févr. 2013
+"""
+Fichier contenant les commandes lançables par le client
 
 @author: Quentin
-'''
+"""
 
 import json
 import sys
@@ -15,8 +15,13 @@ import core.monitoring
 import core.benchutils
 
 
-def error(reason="Generic error"):
-    """Fonction permettant de notifier une erreur au serveur"""
+def error(reason="Erreur generale"):
+    """
+    Fonction permettant de notifier une erreur au serveur en formattant un dictionnaire standard
+
+    Arguments:
+    reason -- raison de l'erreur déclenchée
+    """
     
     response = dict(command = "error", returnValue = reason)
 
@@ -24,7 +29,12 @@ def error(reason="Generic error"):
 
 
 def test(params):
-    """ Fonction permettant de tester si le client est correctement initialisé"""
+    """
+    Fonction permettant de tester si le client est correctement initialisé
+
+    Arguments:
+    params -- dictionnaire de paramètres contenant notamment les modules à tester
+    """
     
     response = dict(command = "test", returnValue = True)
 
@@ -42,7 +52,12 @@ def test(params):
 
 
 def heartbeat(params=None):
-    """Réponse à un heartbeat"""
+    """
+    Réponse à un heartbeat
+
+    Arguments:
+    params -- dictionnaire de paramètres (inutilisés ici)
+    """
     
     response = dict(command = "heartbeat", returnValue = True)
 
@@ -50,12 +65,17 @@ def heartbeat(params=None):
 
 
 def run(params):
-    """Fonction pour effectuer un test de benchmark"""
+    """
+    Fonction pour effectuer un test de benchmark
+
+    Arguments:
+    params -- dictionnaire des paramètres contenant le module à exectuer et le nombre de thread
+    """
     
     response = dict(command = "test", returnValue = None)
 
     try:
-        print ">> params = %s" % params
+        # print ">> params = %s" % params
         # chargement du module en mémoire
         mods = core.benchutils.modLoad([params["module"]])
 
@@ -71,12 +91,12 @@ def run(params):
         response["monitoring"] = dict()
         response["monitoring"] = core.monitoring.graphFile(monitor.stop())
 
-        print ">> return = %s" % response["returnValue"]
+        # print ">> return = %s" % response["returnValue"]
     except core.errors.InvalidModuleError as e:
         response = error(e.__str__())
         monitor.stop()  # Arret du thread de monitoring
     except:
-        print "Unexpected error:", sys.exc_info()[0]
+        print "error:", sys.exc_info()[0]
         monitor.stop()  # Arret du thread de monitoring
         raise
 

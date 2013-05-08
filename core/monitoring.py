@@ -22,8 +22,12 @@ from pylab import *
 
 
 def getSysInfo():
-    """Fonction basique pour récupérer quelques info système"""
+    """
+    Fonction basique pour récupérer quelques info système
+    """
+
     val = dict()
+
     val["time"]     = [time.time()]
     val["mem"]      = [psutil.virtual_memory()[2]]
     val["swap"]     = [psutil.swap_memory()[3]]
@@ -32,13 +36,21 @@ def getSysInfo():
     val["net_sent"] = [psutil.network_io_counters(pernic=False)[0]]
     val["net_recv"] = [psutil.network_io_counters(pernic=False)[1]]
     val["cpu"]      = [psutil.cpu_percent(interval=0.8)]
+
     return val
 
 
 def getSI(val=None):
-    """Récupération de données système ajoutées dans uns liste"""
+    """
+    Récupération de données système ajoutées dans uns liste
+
+    Arguments:
+    val -- métriques à acquérir
+    """
+
     if val == None:
         val = dict()
+
         val["time"] = []
         val["mem"] = []
         val["swap"] = []
@@ -56,11 +68,19 @@ def getSI(val=None):
     val["net_sent"] += [psutil.network_io_counters(pernic=False)[0]]
     val["net_recv"] += [psutil.network_io_counters(pernic=False)[1]]
     val["cpu"]      += [psutil.cpu_percent(interval=0.8)]
+
     return val
 
 
 def timeRange(duration, inter=1):
-    """Lancement de la récupération pour un temps défini"""
+    """
+    Lancement de la récupération pour un temps défini
+
+    Arguments:
+    duration -- durée d'acquisition du monitoring
+    inter -- intervalle d'acquisition
+    """
+
     # Ajustement interval
     inter = round(inter)
     if inter < 1:
@@ -76,12 +96,20 @@ def timeRange(duration, inter=1):
         if diff < 0:
             diff = 0
         time.sleep(diff)
+
     return val
 
 
 
-def graph(val=dict(), prefix = ''):
-    """Création des graphiques associés aux résultats"""
+def graph(val=dict(), prefix=""):
+    """
+    Création des graphiques associés aux résultats
+
+    Arguments:
+    val -- les métriques a prendre en compte
+    prefix -- ??
+    """
+
     # Vérification qu'il y a des valeurs
     if not (type(val) == dict):
         return
@@ -194,6 +222,13 @@ def graph(val=dict(), prefix = ''):
 
 
 def graphFile(val=dict()):
+    """
+    Création du fichier du graphique
+
+    Arguments:
+    val -- métriques à acquérir
+    """
+
     # valeur de retour
     res = dict()
 
@@ -226,7 +261,10 @@ def graphFile(val=dict()):
 
 
 class Monitoring(threading.Thread):
-    """Récupération des résultats en arroère plan"""
+    """
+    Récupération des résultats en arrière plan en threading
+    """
+
     def __init__(self, inter=1):
         threading.Thread.__init__(self)
         self.val = None

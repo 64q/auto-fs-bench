@@ -14,6 +14,11 @@ import core.utils
 def generate_filename(config, module, virtual=False):
     """
     Cette fonction génère le nom du fichier de sauvegarde de la sortie du script de bench
+
+    Arguments:
+    config -- configuration du test de benchmark
+    module -- module ciblé
+    virtual -- indique si le fichier doit être créé physiquement ou pas
     """
 
     # chargement du dirname du module
@@ -25,6 +30,10 @@ def generate_filename(config, module, virtual=False):
 def generate_testdir(test_config, virtual=False):
     """
     Cette fonction génère le dossier du test
+
+    Arguments:
+    test_config -- configuration du test de benchmark
+    virtual -- indique si le dossier doit être créé physiquement ou pas
     """
 
     # chargement de la configuration et génération dirname
@@ -41,9 +50,13 @@ def generate_testdir(test_config, virtual=False):
 
 def generate_moduledir(config, module, virtual=False):
     """
-    Cette fonction génère le dossier de sauvegarde des résultats s'il n'existe pas
+    Cette fonction génère le dossier de sauvegarde des résultats s'il n'existe pas sinon, il 
+    retourne le chemin du dossier correspondant
 
-    Sinon, il retourne le chemin du dossier correspondant
+    Arguments:
+    config -- configuration du test
+    module -- module du test ciblé
+    virtual -- indique si le dossier doit être créé physiquement ou pas
     """
 
     # chargement de la configuration et génération dirname
@@ -59,6 +72,11 @@ def generate_moduledir(config, module, virtual=False):
 def build_client_config(config, client, module):
     """
     Construit la configuration du test chez le client
+
+    Arguments:
+    config -- configuration du serveur
+    client -- client cible de la création de la config
+    module -- le module à inclure dans la config
     """
     
     # création config client
@@ -74,6 +92,11 @@ def build_client_config(config, client, module):
 def build_server_config(test, virtual=False):
     """
     Construit la configuration du test chez le serveur
+
+    Arguments:
+    test -- test de benchmark à charger
+    virtual -- indique si la construction implique la création de l'arborescence ou pas (utile si
+    on désire juste tester la config)
     """
     
     # chargement de la configuration de base

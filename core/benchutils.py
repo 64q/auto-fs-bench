@@ -15,15 +15,19 @@ import base64
 import core.errors
 
 
-def modLoad(liste = None):
+def modLoad(liste=None):
     """
-    Chargement des modules
+    Chargement des modules selon une liste passée en paramètre, lève une exception si les modules ne
+    passe pas la validation
+
+    Arguments:
+    liste -- liste des modules à charger
     """
 
     # Init
     mod = {}
     # Si liste vide, on charge tous les modules potentiels dans le dossier
-    if liste == None:
+    if liste is None:
         liste = []
         rep = os.listdir("./modules/")
         print rep
@@ -58,6 +62,9 @@ def modLoad(liste = None):
 def modCheck(mod):
     """
     Vérifier si un module contient toutes les fonctions nécessaires
+
+    Arguments:
+    mod -- le module à vérifier
     """
 
     func = ["test", "run"]
@@ -75,6 +82,12 @@ def modCheck(mod):
 def modLaunch(modfunc, func, param="", nb=1):
     """
     Lancement d'une instance d'une fonction d'un module
+
+    Arguments:
+    modfunc -- module cible
+    func -- fonction cible du module
+    param -- paramètres de lancement
+    nb -- nombre de threads à lancer
     """
 
     # récupérer la fonction voulue
@@ -98,6 +111,17 @@ def modLaunch(modfunc, func, param="", nb=1):
 
 
 def context(pfonc, result, name, param=""):
+    """
+    Fonction de contexte invoquée par les threads, cette fonction va créer un contexte d'execution
+    unique pour le test afin d'éviter les collisions lors de l'execution de plusieurs threads
+
+    Arguments:
+    pfonc -- fonction executée
+    result -- resultat d'execution
+    name -- nom du thread
+    param -- paramètres de lancement
+    """
+
     val = 0
     ok = False
     while not ok:

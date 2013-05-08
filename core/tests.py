@@ -3,7 +3,6 @@
 """
 Ce fichier contient des fonctions utilitaires pour la gestion des tests de bench
 
-
 @author Quentin
 """
 
@@ -15,6 +14,12 @@ import core.utils
 def save_files(moduledir, filename, client, threads_results):
     """
     Cette fonction créé les fichiers correspondant aux tests effectués du module
+
+    Arguments:
+    moduledir -- dossier de sauvegarde du module
+    filename -- nom du fichier où il faut sauvegarder les résultats
+    client -- client cible de l'enregistrement
+    threads_results -- résultats des différents threads du client
     """
 
     with open(filename, "ab") as csvfile:
