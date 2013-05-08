@@ -96,7 +96,7 @@ def build_server_config(test, virtual=False):
     Arguments:
     test -- test de benchmark à charger
     virtual -- indique si la construction implique la création de l'arborescence ou pas (utile si
-    on désire juste tester la config)
+        on désire juste tester la config)
     """
     
     # chargement de la configuration de base
