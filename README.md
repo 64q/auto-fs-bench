@@ -102,9 +102,9 @@ pour être ignoré par Git.
 Le projet est découpé en modules pythons
 
     core/       -- contient les fichiers de base du projet
+        commands/   -- contient l'ensemble des commandes client/serveur
     config/     -- concentre l'essentiel de la configuration
         tests/  -- contient les fichiers de configuration des tests
-    commands/   -- contient l'ensemble des commandes client/serveur
     modules/    -- contient les modules de benchmark lançables par la plateforme
     server.py   -- executable pour lancer le serveur
     client.py   -- executable pour lancer le client
