@@ -30,14 +30,24 @@ pjdtest() {
     # Path for the log file
     flog=${WORKING_DIR}/pjdtest_`date "+%Y%m%d_%Hh%Mm%Ss"`_`basename $1`.log
 
+    # Create a context
+    TESTDIR="$1/pjdtest_${HOSTNAME}_$$"
+    mkdir $TESTDIR
+    if [ 0 -ne $? ]; then
+        usage
+    fi
+
     # Go to mountpoint
-    cd $1
+    cd $TESTDIR
 
     # EXECUTE FILEOP
     prove -r ${LOCAL_DIR} 2>&1 | tee -a $flog
 
     # Return to current directory
     cd ${WORKING_DIR}
+
+    # Clean
+    rm -rf $TESTDIR
 }
 
 usage() {

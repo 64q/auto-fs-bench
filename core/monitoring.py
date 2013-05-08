@@ -107,7 +107,8 @@ def graph(val=dict(), prefix=""):
 
     Arguments:
     val -- les métriques a prendre en compte
-    prefix -- ??
+    prefix -- Chaine de caractères mise devant le nom 
+            du fichier de monitoring. Peut être un dossier "/MyDir/"
     """
 
     # Vérification qu'il y a des valeurs
