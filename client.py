@@ -18,7 +18,6 @@ import SocketServer
 import config.client
 import core.commands.client
 
-
 # configuration client
 __program__ = "auto-fs-bench"
 __version__ = "0.1 (dev)"
@@ -26,56 +25,64 @@ __description__ = "auto-fs-bench client executable"
 
 
 class ClientArgumentParser(argparse.ArgumentParser):
-    """Argument Parser pour le serveur"""
+    """
+    Argument Parser pour le serveur
+    """
     
     def __init__(self):
         super(ClientArgumentParser, self).__init__()
         
         # initialisations
-        self.description = "%s Version %s" % (__description__, __version__)
+        self.description = "%s, Version %s" % (__description__, __version__)
         
         # ajout des paramètres de lancement
         
         # lancement en mode deamon
         self.add_argument("-d", "--daemon", action="store_true", dest="daemon", 
             help="lancement en demon")
-        # lancement en mode verbeux
-        self.add_argument("-v", "--verbose", action="count", dest="verbose", 
-            help="parametrage de la verbosite")
         # port d'écoute du client
         self.add_argument("-p", "--port", dest="port", default=config.client.listen_port, type=int, 
             help="port d'ecoute du client (default: 7979)")
 
 
 class ClientHandler(SocketServer.StreamRequestHandler):
-    """Request handler for the TCP Client"""
+    """
+    Request handler pour le client TCP
+    """
 
     def handle(self):
-        # self.request is the TCP socket connected to the client
         self.data = self.rfile.readline().strip()
-        
-        request = json.loads(self.data)
 
-        print ">> Receive from {0} request >> {1}".format(self.client_address[0], request)
-
-        # traitement des commandes recues en appelant directement la commande du module
-        
         try:
+            # chargement de la chaine JSON reçue, on la met dans le bloc try..catch afin de 
+            # prévenir des erreurs lors du décodage
+            request = json.loads(self.data)
+
+            print ">> Receive from {0} request >> {1}".format(self.client_address[0], request)
+
+            # traitement des commandes recues en appelant directement la commande du module
+            # munie des bons paramètres de lancement
             response = getattr(core.commands.client, request["command"])(request["params"])
         except Exception as e:
             response = core.commands.client.error("%s" % e)
 
-        print ">> Sent back response >> %s" % response
+        # print ">> Sent back response >> %s" % response
         
         self.request.sendall(json.dumps(response))
 
 
 class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
-    """Classe necessaire pour threader le client"""
+    """
+    Classe necessaire pour threader le client
+    """
+
+    pass
 
 
-def main(argv=None):
-    """Fonction de main pour le client"""
+def main():
+    """
+    Fonction de main pour le client
+    """
     
     # parsage des arguments    
     args = ClientArgumentParser().parse_args()
