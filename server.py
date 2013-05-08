@@ -18,7 +18,7 @@ import config.server
 
 # definition des variables de description
 __program__ = "auto-fs-bench"
-__version__ = "0.1 (dev)"
+__version__ = "0.9 (pre-rendu)"
 __description__ = "auto-fs-bench server executable"
 
 
