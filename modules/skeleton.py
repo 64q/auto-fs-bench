@@ -1,20 +1,24 @@
 # -*- coding: utf-8 -*-
-"""
-squelette de module de benchmark
-
-Ce fichier donne la structure attendue pour un module
-de benchmark. Il y a aussi quelques exemples de commandes
-possibles.
 
 """
+Squelette de module de benchmark
 
+Ce fichier donne la structure attendue pour un module de benchmark. 
+Il y a aussi quelques exemples de commandes possibles. Pour plus d'informations
+sur la manière d'appeller les routines systèmes, référez vous aux modules déjà écrits.
+
+@author: Olivier
+"""
+
+# notez que ces imports sont minimaux pour effectuer des appels système
 import os, subprocess, stat
 import core.errors
+
 
 def test():
     """
     Fonction pour vérifier que le script va pouvoir s'exécuter correctement
-    sur le client.
+    sur le client
 
     Si tout est OK, la fonction doit renvoyer TRUE.
     Dans le cas contraire il faut lancer une exception :
@@ -26,17 +30,18 @@ def test():
 
     return True
 
+
 def run(workdir="./", var=""):
     """
-    Fonction d'exécution du test de benchmark.
+    Fonction d'exécution du test de benchmark
 
-    workdir : correspond au dossier où vous devez travailler. /!\ CE N'EST  PAS
-        LE REPERTOIRE COURANT.
-    var     : chemin du dossier monté à tester.
+    Arguments:
+    workdir -- correspond au dossier où vous devez travailler
+        /!\ CE N'EST  PAS LE REPERTOIRE COURANT.
+    var -- chemin du dossier monté à tester.
 
     Le répertoire courant est celui de lancement du programme :
         dossier "auto-fs-bench"
-
     """
 
     return "-"
