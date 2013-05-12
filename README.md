@@ -15,7 +15,8 @@ Dépendances python nécessaires à installer sur le serveur :
 
 * `python-argparse`
 
-Pour utiliser le logiciel, vous devez simplement cloner le dépôt `git clone https://github.com/KenTiN/auto-fs-bench.git`.
+Pour utiliser le logiciel, vous devez simplement cloner le dépôt `git clone https://github.com/KenTiN/auto-fs-bench.git`. Vous devez
+effectuer ce clonage sur tous vos clients qui exécuterons votre test de benchmark.
 
 * Pour lancer le client `python client.py`
 * Pour lancer le serveur `python server.py -s`
@@ -51,6 +52,8 @@ comment = "Simple benchmark example"
 modules = ["dd"]
 
 # liste des clients cibles du test
+# On spécifie le point de montage où est effectué le test ainsi que le nombre de fois où
+# il est exécuté en parallèle sur le client.
 clients = {
     "localhost": {"path": "/srv", "times": 1}
 }
@@ -77,6 +80,8 @@ Vous pouvez lancer le serveur en mode interactif avec un sous-shell ou lancer di
 
 * Pour lancer en mode interactif, entrez `python server.py -s`
 * Pour lancer le test `test` directement, entrez `python server.py test`
+
+Veillez a bien lancer le client sur chaque machine cliente de test via `python client.py` !
 
 ### Liste des commandes du shell serveur
 
