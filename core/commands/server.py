@@ -38,7 +38,7 @@ def test(host, port, modules=[]):
 
     try:
         response = core.transmission.send_to_client(host, port, "test", params={"modules": modules})
-    except core.errors.ClientTimeoutError as e:
+    except Exception as e:
         response = error(e.__str__())
 
     return response
@@ -58,7 +58,7 @@ def heartbeat(host, port, timeout=0.1):
 
     try:
         response = core.transmission.send_to_client(host, port, "heartbeat", timeout=timeout)
-    except core.errors.ClientTimeoutError as e:
+    except Exception as e:
         response = error(e.__str__())
 
     return response
@@ -78,7 +78,7 @@ def run(host, port, conf=dict()):
 
     try:
         response = core.transmission.send_to_client(host, port, "run", params=conf, blocking=0)
-    except core.errors.ClientTimeoutError as e:
+    except Exception as e:
         response = error(e.__str__())
 
     return response
