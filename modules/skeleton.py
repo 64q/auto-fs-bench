@@ -42,6 +42,7 @@ def run(workdir="./", var=""):
 
     Le répertoire courant est celui de lancement du programme :
         dossier "auto-fs-bench"
+    Le retour de la fonction sera enregistré dans le fichier de résumé du module
     """
 
     return "-"
