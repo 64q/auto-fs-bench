@@ -18,7 +18,7 @@ import config.server
 
 # definition des variables de description
 __program__ = "auto-fs-bench"
-__version__ = "0.9 (pre-rendu)"
+__version__ = "0.9 (rendu)"
 __description__ = "auto-fs-bench server executable"
 
 
@@ -175,7 +175,7 @@ class ServerCmd(cmd.Cmd):
             except Exception as e:
                 print "error: %s" % e
         else:
-            print "error: no test given"
+            print "error: aucun test renseigné"
             
     def help_run(self):
         print "\n".join(["- run <test>", "Lance un test de benchmark"])
@@ -210,7 +210,7 @@ class ServerCmd(cmd.Cmd):
             print "error: aucun test renseigné"
     
     def help_test(self):
-        print "\n".join(["- test <test>", "Lance un test de validite sur les differents modules du test"])
+        print "\n".join(["- test <test>", "Lance un test de validité sur les différents modules du test"])
 
     def do_list(self, line):
         """
@@ -270,7 +270,7 @@ class ServerCmd(cmd.Cmd):
         print "sortie de auto-fs-bench"; sys.exit()
         
     def help_exit(self):
-        print "\n".join(["- exit", "Quitte la CLI du serveur"])
+        print "\n".join(["- exit", "Quitte le shell du serveur"])
     
     def do_version(self, line):
         print "%s, v%s" % (__program__, __version__)

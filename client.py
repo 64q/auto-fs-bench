@@ -20,7 +20,7 @@ import core.commands.client
 
 # configuration client
 __program__ = "auto-fs-bench"
-__version__ = "0.9 (pre-rendu)"
+__version__ = "0.9 (rendu)"
 __description__ = "auto-fs-bench client executable"
 
 
