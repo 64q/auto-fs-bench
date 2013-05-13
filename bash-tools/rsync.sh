@@ -107,7 +107,7 @@ echo "End rm: $(date +%d-%m-%Y--%H:%M:%S)" >> $flog
 
     # Autres erreurs
 		num=`wc -l $flog | cut -d' ' -f1`
-		sed -i '/*** Skipping any contents from this failed directory ***/d' $flog
+		sed -i '/Skipping any contents from this failed directory/d' $flog
 		echo "Skipping any contents from this failed directory :" $(($num - `wc -l $flog | cut -d' ' -f1`)) >> $flog
 
 # Suppressiond des dossiers de travail
