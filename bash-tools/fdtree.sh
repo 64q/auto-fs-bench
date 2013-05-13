@@ -38,6 +38,8 @@ fdtree() {
     ${FDTREE_BINARY} -l $2 -d $3 -f $4 -s $5 -o $1 2>&1 | tee -a $flog
 
     # Clean errors in the file
+    echo "--------------------------------------------------------------" >> $flog
+    echo "Gestion des erreurs :" >> $flog
     # rm
         # timer
         num=`wc -l $flog | cut -d' ' -f1`
