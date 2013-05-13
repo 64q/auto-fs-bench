@@ -11,6 +11,7 @@ import os
 import threading
 import time
 import base64
+import importlib
 
 import core.errors
 
@@ -30,32 +31,29 @@ def modLoad(liste=None):
     if liste is None:
         liste = []
         rep = os.listdir("./modules/")
-        print rep
+
         for r in rep :
             name = r[:-3]
-            print name
+
             if os.path.isfile("./modules/"+r) and r[-3:] == ".py" and r[:2] != "__" and name != "":
                 liste += [name]
 
-
-    print "liste", liste
     # parcours de la liste des modules
     for name in liste :
-        print 'Chargement du module', name
-
         try:
-            res = __import__("modules."+name)
-            val = getattr(res, name)
-            # val = importlib.import_module('modules.'+name)
-            if modCheck(val) :
-                mod[name] = val
-            else :
-                print '   erreur de fonction dans le module ', name
-                raise InvalidModuleError("Invalid module (function error)")
+            # import du module
+            module = importlib.import_module("modules." + name)
 
-        except:
-            print '   [except] erreur de langage dans le module ', name
-            raise core.errors.InvalidModuleError("Invalid module (language error)")
+            # vérification des fonctions du module
+            modCheck(module)
+
+            # validation OK, on affecte les fonctions dans le dict
+            mod[name] = val
+        except core.errors.MissingFunctionError as e:
+            raise core.errors.InvalidModuleError("Invalid module (function error: %s)" % e.__str__())
+        except ImportError as e:
+            raise core.errors.InvalidModuleError("Invalid module (import error: %s)" % e.__str__())
+
     return mod
 
 
@@ -73,9 +71,10 @@ def modCheck(mod):
     for f in func:
         try:
             func = getattr(mod, f)
-        except AttributeError:
+        except AttributeError as e:
             error = True
-            print '   fonction', f, 'manquante'
+            raise core.errors.MissingFunctionError("fonction '%s' manquante" % f)
+
     return not error
 
 
