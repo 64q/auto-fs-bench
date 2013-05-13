@@ -59,6 +59,7 @@ echo "End rm: $(date +%d-%m-%Y--%H:%M:%S)" >> $flog
 	sed -i '/LEVEL0/d' $flog
 
 # Clean errors in the file
+	echo "" >> $flog
     echo "--------------------------------------------------------------" >> $flog
     echo "Gestion des erreurs :" >> $flog
     # rm
@@ -73,6 +74,7 @@ echo "End rm: $(date +%d-%m-%Y--%H:%M:%S)" >> $flog
         sed -i '/^rm: cannot remove /d' $flog
         echo "rm - autre erreur :" $(($num - `wc -l $flog | cut -d' ' -f1`)) >> $flog
         echo "Type autre erreur :" $error >> $flog
+        echo "" >> $flog
 
 
     # mkdir
@@ -87,6 +89,7 @@ echo "End rm: $(date +%d-%m-%Y--%H:%M:%S)" >> $flog
         sed -i '/^mkdir: cannot create directory /d' $flog
         echo "mkdir - : autre erreur :" $(($num - `wc -l $flog | cut -d' ' -f1`)) >> $flog
         echo "Type autre erreur :" $error >> $flog
+        echo "" >> $flog
 
     # rmdir
         # Timer
@@ -100,6 +103,7 @@ echo "End rm: $(date +%d-%m-%Y--%H:%M:%S)" >> $flog
         sed -i '/^rmdir: failed to remove /d' $flog
         echo "rmdir - autre erreur :" $(($num - `wc -l $flog | cut -d' ' -f1`)) >> $flog
         echo "Type autre erreur :" $error >> $flog
+        echo "" >> $flog
 
     # Autres erreurs
 		num=`wc -l $flog | cut -d' ' -f1`

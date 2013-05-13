@@ -38,6 +38,7 @@ fdtree() {
     ${FDTREE_BINARY} -l $2 -d $3 -f $4 -s $5 -o $1 2>&1 | tee -a $flog
 
     # Clean errors in the file
+    echo "" >> $flog
     echo "--------------------------------------------------------------" >> $flog
     echo "Gestion des erreurs :" >> $flog
     # rm
@@ -52,6 +53,7 @@ fdtree() {
         sed -i '/^rm: cannot remove /d' $flog
         echo "rm - autre erreur :" $(($num - `wc -l $flog | cut -d' ' -f1`)) >> $flog
         echo "Type autre erreur :" $error >> $flog
+        echo "" >> $flog
 
 
     # mkdir
@@ -66,6 +68,7 @@ fdtree() {
         sed -i '/^mkdir: cannot create directory /d' $flog
         echo "mkdir - : autre erreur :" $(($num - `wc -l $flog | cut -d' ' -f1`)) >> $flog
         echo "Type autre erreur :" $error >> $flog
+        echo "" >> $flog
 
     # rmdir
         # Timer
@@ -79,6 +82,7 @@ fdtree() {
         sed -i '/^rmdir: failed to remove /d' $flog
         echo "rmdir - autre erreur :" $(($num - `wc -l $flog | cut -d' ' -f1`)) >> $flog
         echo "Type autre erreur :" $error >> $flog
+        echo "" >> $flog
 }
 
 usage() {
