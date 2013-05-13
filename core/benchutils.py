@@ -48,7 +48,7 @@ def modLoad(liste=None):
             modCheck(module)
 
             # validation OK, on affecte les fonctions dans le dict
-            mod[name] = val
+            mod[name] = module
         except core.errors.MissingFunctionError as e:
             raise core.errors.InvalidModuleError("Invalid module (function error: %s)" % e.__str__())
         except ImportError as e:
