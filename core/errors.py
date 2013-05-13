@@ -59,6 +59,28 @@ class TestsError(Exception):
     Exception lancée lorsque les tests échouent
     """
 
+    def __init__(self, msg=""):
+        self.msg = msg
+
+    def __str__(self):
+        return self.msg
+
+class UnknownClientError(Exception):
+    """
+    Exception lancée lorsque le client est inconnu
+    """
+
+    def __init__(self, msg):
+        self.msg = msg
+
+    def __str__(self):
+        return self.msg
+
+class MissingFunctionError(Exception):
+    """
+    Exception lancée lorsque la fonction du module est absente
+    """
+
     def __init__(self, msg):
         self.msg = msg
 
