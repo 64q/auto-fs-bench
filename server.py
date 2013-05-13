@@ -72,7 +72,7 @@ class ServerCmd(cmd.Cmd):
         line -- la ligne de commande passée
         """
 
-        print "error: unrecognized command '%s'." % line
+        print "error: commande '%s' non reconnue." % line
     
     def do_run(self, test):
         """
@@ -100,22 +100,24 @@ class ServerCmd(cmd.Cmd):
                     test_response = core.commands.server.test(config.server.clients[client], config.server.send_port, server_config.modules)
 
                     if test_response["command"] == "error":
-                        core.utils.print_row(client, test_response["returnValue"])
+                        clients_results[client] = test_response["returnValue"]
                         test_results = False
 
+                # si une erreur sur le test() des clients, on arrête le run
                 if not test_results:
-                    raise core.errors.TestsError("la fonction test() a échoué sur certains clients")
+                    raise core.errors.TestsError()
 
                 # cette fois les clients sont OK, on créé réellement le test
                 server_config = core.manager.build_server_config(test)
 
                 print ">> Debut du test module par module"
 
+                # lancement module par module des tests
                 for module in server_config.modules:
                     threads = list()
                     clients_results[module] = dict()
 
-                    print ">> Execution du module '%s' en cours ..." % module
+                    print ">> Lancement du module '%s' ..." % module
 
                     for client in server_config.clients:
                         # configuration du client à envoyer
@@ -134,6 +136,10 @@ class ServerCmd(cmd.Cmd):
                     sys.stdout.flush()
                     core.utils.threads_join_all(threads)
 
+                    # affichage des résultats du module
+                    core.utils.print_title("Resultats du module '%s'" % module)
+                    core.utils.print_row("Client", "Etat", "Message");
+
                     # enregistrement des résultats du module terminé
                     for client, result in clients_results[module].iteritems():
                         try:
@@ -144,36 +150,32 @@ class ServerCmd(cmd.Cmd):
                             # on vérifie que le résultat n'est pas une erreur
                             core.transmission.check_transmission(result)
 
+                            # test passé avec succès, on affiche
+                            core.utils.print_row(client, "OK")
+
                             # sauvegarde des différents fichiers
                             core.tests.save_files(moduledir, filename, client, result)
                         except core.errors.ClientTransmissionError as e:
+                            # affichage de l'erreur dans la console
+                            core.utils.print_row(client, "KO", e)
+
                             # enregistrement dans le fichier de résumé de l'erreur rencontrée
                             with open(filename, "ab") as csvfile:
                                 core.utils.csv_write_line(csvfile, [client, e.__str__()])
 
-                    sys.stdout.flush()
+                    print ">> Fin d'exécution du module"; sys.stdout.flush()
 
                 print ">> Fin du test de benchmark"
-
-                # lecture de chaque client et de ses résultats de thread
-                for module, module_results in clients_results.iteritems():
-                    core.utils.print_title("Resultats du module '%s'" % module)
-
-                    core.utils.print_row("Client", "Etat", "Message");
-
-                    for client, result in module_results.iteritems():
-                        try:
-                            # on vérifie que le résultat n'est pas une erreur
-                            core.transmission.check_transmission(result)
-
-                            # test passé avec succès, on affiche
-                            core.utils.print_row(client, "OK")
-                        except Exception as e:
-                            # affichage de l'erreur dans la console
-                            core.utils.print_row(client, "KO", e)
-            # on capture toutes les exceptions qui pourraient être lancées pendant les traitements
-            except Exception as e:
+            # un client inconnu au bataillon ? On notifie !
+            except core.errors.UnknownClientError as e:
                 print "error: %s" % e
+            # exception si test() a échoué sur clients
+            except core.errors.TestsError as e:
+                core.utils.print_title("Résumé des erreurs")
+                core.utils.print_row("Client", "Etat", "Message")
+
+                for client, error in clients_results.iteritems():
+                    core.utils.print_row(client, "OK", error)
         else:
             print "error: aucun test renseigné"
             
@@ -193,7 +195,6 @@ class ServerCmd(cmd.Cmd):
                 server_config = core.manager.build_server_config(test, virtual=True)
                 
                 core.utils.print_title("Test de configuration du test '%s'" % test, ruler="=")
-
                 core.utils.print_row("Client", "Etat", msg="Message");
 
                 for client in server_config.clients:
@@ -204,6 +205,8 @@ class ServerCmd(cmd.Cmd):
                         core.utils.print_row(client, "OK");
                     else:
                         core.utils.print_row(client, "KO", msg=response["returnValue"])
+            except core.errors.UnknownClientError as e:
+                print "error: %s" % e
             except ImportError as e:
                 print "error: %s" % e
         else:

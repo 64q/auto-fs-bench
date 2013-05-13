@@ -101,7 +101,13 @@ def build_server_config(test, virtual=False):
     
     # chargement de la configuration de base
     config = core.utils.load_config_test(test)
+    config_server = core.utils.load_config_server()
     
+    # vérification que les clients sont valides
+    for client in config.clients:
+        if not client in config_server.clients:
+            raise core.errors.UnknownClientError("le client '%s' est inconnu" % client)
+
     # ajout des variables de configuration supplémentaires
     setattr(config, "date", time.gmtime())
     setattr(config, "dirpath", core.manager.generate_testdir(config, virtual=virtual))
