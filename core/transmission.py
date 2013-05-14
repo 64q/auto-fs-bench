@@ -51,7 +51,7 @@ def send_to_client(host, port, call, params=None, timeout=1, blocking=1):
             while done < 2:
                 try:
                     current_recv = sock.recv(4096)
-                    buffer_recv = buffer_recv + current_recv # FIXME
+                    buffer_recv = buffer_recv + current_recv
 
                     done = 1 # on commence à recevoir les données
 
@@ -75,7 +75,7 @@ def send_to_client(host, port, call, params=None, timeout=1, blocking=1):
 
                         time_spent = 0
         else:
-            buffer_recv = sock.recv(4096) # FIXME
+            buffer_recv = sock.recv(4096)
     except socket.timeout as e:
         raise core.errors.ClientTimeoutError("client '%s' timeout" % host)
     except socket.error as e:
@@ -87,7 +87,8 @@ def send_to_client(host, port, call, params=None, timeout=1, blocking=1):
         response = json.loads(buffer_recv)
     # la chaine JSON recue est invalide, il faut le signaler !
     except ValueError as e:
-        raise core.errors.ClientTransmissionError("client '%s' a une transmission invalide" % host)
+        raise core.errors.ClientTransmissionError("client '%s' a une transmission invalide \
+            (chaine JSON invalide)" % host)
 
     return response
 

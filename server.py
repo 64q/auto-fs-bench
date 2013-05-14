@@ -110,7 +110,7 @@ class ServerCmd(cmd.Cmd):
                 # cette fois les clients sont OK, on créé réellement le test
                 server_config = core.manager.build_server_config(test)
 
-                print ">> Debut du test module par module"
+                print ">> Debut du benchmark module par module"
 
                 # lancement module par module des tests
                 for module in server_config.modules:
@@ -165,7 +165,7 @@ class ServerCmd(cmd.Cmd):
 
                     print ">> Fin d'exécution du module"; sys.stdout.flush()
 
-                print ">> Fin du test de benchmark"
+                print ">> Fin du benchmark"
             # un client inconnu au bataillon ? On notifie !
             except core.errors.UnknownClientError as e:
                 print "error: %s" % e
@@ -194,12 +194,13 @@ class ServerCmd(cmd.Cmd):
             try:
                 server_config = core.manager.build_server_config(test, virtual=True)
                 
-                core.utils.print_title("Test de configuration du test '%s'" % test, ruler="=")
+                core.utils.print_title("Test de configuration du benchmark '%s'" % test, ruler="=")
                 core.utils.print_row("Client", "Etat", msg="Message");
 
                 for client in server_config.clients:
                     # execution de la fonction de test sur chacun des client cible du test
-                    response = core.commands.server.test(config.server.clients[client], config.server.send_port, server_config.modules)
+                    response = core.commands.server.test(config.server.clients[client], 
+                        config.server.send_port, server_config.modules)
 
                     if response["command"] == "test":
                         core.utils.print_row(client, "OK");
@@ -213,7 +214,8 @@ class ServerCmd(cmd.Cmd):
             print "error: aucun test renseigné"
     
     def help_test(self):
-        print "\n".join(["- test <test>", "Lance un test de validité sur les différents modules du test"])
+        print "\n".join(["- test <test>", "Lance un test de validité sur les \
+            différents modules du test"])
 
     def do_list(self, line):
         """
@@ -331,11 +333,12 @@ def main():
     else:
         # renseignement du test à lancer
         if not args.bench_test is None:
-            print ">> Lancement du test de benchmark '%s'" % args.bench_test
+            print ">> Lancement du benchmark '%s'" % args.bench_test
 
             cmd.onecmd('run ' + args.bench_test)
         else:
-            print "error: aucun test de benchmark renseigné"; return 1
+            print "error: aucun benchmark renseigné (à choisir dans la liste des \
+                fichiers de 'config/tests/'"; return 1
             
     return 0
 
