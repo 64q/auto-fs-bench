@@ -175,7 +175,7 @@ class ServerCmd(cmd.Cmd):
                 core.utils.print_row("Client", "Etat", "Message")
 
                 for client, error in clients_results.iteritems():
-                    core.utils.print_row(client, "OK", error)
+                    core.utils.print_row(client, "KO", error)
         else:
             print "error: aucun test renseigné"
             
@@ -235,7 +235,7 @@ class ServerCmd(cmd.Cmd):
                 if result["command"] == "heartbeat":
                     core.utils.print_row(client, "Online")
                 else:
-                    core.utils.print_row(client, "Offline",result["returnValue"])
+                    core.utils.print_row(client, "Offline", result["returnValue"])
         # type de listage inconnu
         else:
             print "error: le listage demandé n'est pas connu"
@@ -259,7 +259,7 @@ class ServerCmd(cmd.Cmd):
 
                     # répertoire renseigné créé, on effectue le changement
                     config.server.save_dir = line
-                except e:
+                except Exception as e:
                     print "error: impossible de créer le dossier de données (%s)" % e
             else:
                 config.server.save_dir = line
