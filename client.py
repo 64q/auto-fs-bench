@@ -42,7 +42,7 @@ class ClientArgumentParser(argparse.ArgumentParser):
             help="lancement en demon")
         # port d'écoute du client
         self.add_argument("-p", "--port", dest="port", default=config.client.listen_port, type=int, 
-            help="port d'ecoute du client (default: 7979)")
+            help="port d'ecoute du client (default: %s)" % config.client.listen_port)
 
 
 class ClientHandler(SocketServer.StreamRequestHandler):
@@ -58,7 +58,7 @@ class ClientHandler(SocketServer.StreamRequestHandler):
             # prévenir des erreurs lors du décodage
             request = json.loads(self.data)
 
-            print ">> Receive from {0} request >> {1}".format(self.client_address[0], request)
+            print ">> Receive from {0} request: {1}".format(self.client_address[0], request)
 
             # traitement des commandes recues en appelant directement la commande du module
             # munie des bons paramètres de lancement
