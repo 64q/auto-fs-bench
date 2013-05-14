@@ -82,10 +82,11 @@ def run(params):
         # Monitoring de la machine pendant les tests
         monitor = core.monitoring.Monitoring()
         monitor.start()
-        time.sleep(5)   # Tempo de 5 secondes pour avoir l'état de base de la machine
+        time.sleep(5) # Tempo de 5 secondes pour avoir l'état de base de la machine
 
         # exécution de la fonction de run du module
-        response["returnValue"] = core.benchutils.modLaunch(mods[params["module"]], "run", params["path"], nb=params["times"])
+        response["returnValue"] = core.benchutils.modLaunch(mods[params["module"]], 
+            "run", params["path"], nb=params["times"])
         
         # Arret du monitoring et récupération des données
         response["monitoring"] = dict()
@@ -94,10 +95,9 @@ def run(params):
         # print ">> return = %s" % response["returnValue"]
     except core.errors.InvalidModuleError as e:
         response = error(e.__str__())
+    except Exception as e:
+        print "error: %s (sysinfo: %s)" % (e, sys.exc_info()[0])
         monitor.stop()  # Arret du thread de monitoring
-    except:
-        print "error:", sys.exc_info()[0]
-        monitor.stop()  # Arret du thread de monitoring
-        raise
+        response = error(e.__str__())
 
     return response
