@@ -147,7 +147,7 @@ def graph(val=dict(), prefix=""):
 
 
     # GRafique pour le disque
-    ax2.set_ylabel('Disk read - write (in Ko/sec)')
+    ax2.set_ylabel('Disk read - write (in Mo/sec)')
     ax2.set_xlabel('time in seconde')
     ax2.set_title('Disk Usage')
 
@@ -177,7 +177,7 @@ def graph(val=dict(), prefix=""):
 
     # Graphique pour le réseau
     ax3.set_title('Network Usage')
-    ax3.set_ylabel('Network incoming - outgoing (in Ko/sec)')
+    ax3.set_ylabel('Network incoming - outgoing (in Mo/sec)')
     ax3.set_xlabel('time in seconde')
 
 
