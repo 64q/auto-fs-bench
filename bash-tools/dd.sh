@@ -33,8 +33,8 @@ do_dd()
     for bs in 4096 8192; do # light test
         #10Mo, 100Mo, 1Go, 10Go
         #10485760 104857600 1073741824 10737418240
-        #for size in 10485760 104857600 1073741824 10737418240 ; do
-        for size in 40960 81920 163840 327680 ; do # light test
+        for size in 10485760 104857600 1073741824 ; do
+        #for size in 40960 81920 163840 327680 ; do # light test
 
             # Number of blocks
             let count=${size}/${bs}
